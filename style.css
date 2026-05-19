@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #fff9e6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #cc5500;
+    color: white;
+    padding: 10px 20px;
+    height: 130px;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.logo-box {
+    height: 85px;
+    width: 85px;
+    border: 3px solid #ffd700;
+    background: #a34300;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-logo {
+    height: 90%;
+    width: 90%;
+    object-fit: contain;
+}
+
+.center-title h2 {
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ffd700;
+    text-transform: uppercase;
+}
+
+.header-img {
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    border: 3px solid #ffd700;
+    object-fit: cover;
+}
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    overflow: hidden;
+}
+
+.chat-box {
+    flex: 1;
+    overflow-y: scroll !important;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* સાદું સ્ક્રોલબાર ડિઝાઇન - Force Display */
+.chat-box::-webkit-scrollbar {
+    width: 10px;
+    display: block !important;
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: #cc5500;
+    border-radius: 10px;
+}
+
+.message {
+    padding: 12px 18px;
+    border-radius: 15px;
+    max-width: 80%;
+    font-size: 1.05rem;
+}
+
+.ai-message {
+    background: #ffe4b5;
+    align-self: flex-start;
+}
+
+.user-message {
+    background: #e0f7fa;
+    align-self: flex-end;
+}
+
+.input-area {
+    padding: 15px;
+    background: #fdfdfd;
+    border-top: 2px solid #eee;
+    flex-shrink: 0;
+}
+
+#user-input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #cc5500;
+    border-radius: 10px;
+    outline: none;
+}
+
+.buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.action-btn {
+    flex: 1 1 45%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiritual AI Guide</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="main-content">
+        <header>
+            <div class="header-left">
+                <div class="logo-box">
+                    <img src="logo.png" alt="Logo" class="main-logo">
+                </div>
+            </div>
+            <div class="center-title">
+                <h2>JAY SHREE RAM</h2>
+            </div>
+            <div class="header-right">
+                <div class="header-right-column">
+                    <img src="hanuman_ram_sita_pranam.jpg" alt="Hanuman Ram Sita Pranam" class="header-img">
+                    <select id="language-select" class="lang-dropdown">
+                        <option value="en" selected>English</option>
+                        <option value="gu">ગુજરાતી</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="sa">संस्कृतम्</option>
+                        <option value="mr">मराठी</option>
+                        <option value="ta">தமிழ்</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <main class="chat-container">
+            <div class="chat-box" id="chat-box">
+                <div class="message ai-message">
+                    <p id="welcome-msg">Jay Shree Ram! Welcome Parth, how can I help you?</p>
+                </div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your question here...">
+                <div class="buttons-grid">
+                    <button id="mic-btn" class="action-btn">🎤 Mode: Off</button>
+                    <button id="speak-btn" class="action-btn">🔊 Listen</button>
+                    <button id="send-story-btn" class="action-btn story-btn">Story 📜</button>
+                    <button id="send-suggestion-btn" class="action-btn suggestion-btn">Suggestion 💡</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
