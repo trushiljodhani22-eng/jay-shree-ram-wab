@@ -411,28 +411,98 @@ body::-webkit-scrollbar-button,
 
 @media (max-width: 768px) {
     header {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
         height: auto;
-        min-height: 120px;
-        padding: 10px 12px;
-        gap: 8px;
+        min-height: 0;
+        padding: 8px 6px;
+        gap: 4px;
+    }
+
+    .header-left {
+        flex: 0 0 auto;
+        align-self: center;
+    }
+
+    .logo-box {
+        height: 52px;
+        width: 52px;
+        border-width: 2px;
+        border-radius: 8px;
+    }
+
+    .center-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-self: center;
+        padding: 0 4px;
     }
 
     .center-title h2 {
-        font-size: 1.75rem;
+        font-size: clamp(0.62rem, 3.6vw, 1.75rem);
+        line-height: 1.15;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .header-right {
+        flex: 0 0 auto;
+        align-self: flex-start;
+    }
+
+    .header-img {
+        height: 48px;
+        width: 48px;
+        border-width: 2px;
+        flex-shrink: 0;
+    }
+
+    .header-right-column {
+        width: auto;
+        max-width: none;
+        align-items: center;
+        gap: 6px;
     }
 
     .lang-dropdown {
         width: 100%;
-        max-width: 100%;
         min-width: 0;
-        font-size: 0.85rem;
-        padding: 8px 10px;
+        max-width: 72px;
+        font-size: clamp(0.55rem, 2.8vw, 0.85rem);
+        padding: 4px 4px;
+        border-radius: 6px;
+    }
+}
+
+/* Fine-tune very narrow phones (320px–430px) */
+@media (max-width: 430px) {
+    header {
+        padding: 6px 4px;
+        gap: 2px;
     }
 
-    .header-right-column {
-        width: 100%;
-        align-items: stretch;
+    .logo-box {
+        height: 46px;
+        width: 46px;
+    }
+
+    .header-img {
+        height: 44px;
+        width: 44px;
+    }
+
+    .center-title h2 {
+        font-size: clamp(0.58rem, 4.2vw, 1.1rem);
+        letter-spacing: -0.02em;
+    }
+
+    .lang-dropdown {
+        max-width: 64px;
+        padding: 3px 2px;
     }
 }
 
@@ -442,7 +512,13 @@ body.lang-rtl {
 }
 
 body.lang-rtl .header-right-column {
-    align-items: flex-start;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    body.lang-rtl .header-right-column {
+        align-items: center;
+    }
 }
 
 body.lang-rtl .chat-box,
