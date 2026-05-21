@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spiritual AI Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&family=Noto+Sans+Devanagari&family=Noto+Sans+Gurmukhi&family=Noto+Sans+Kannada&family=Noto+Sans+Malayalam&family=Noto+Sans+Oriya&family=Noto+Sans+Tamil&family=Noto+Sans+Telugu&family=Noto+Sans+Arabic&family=Noto+Sans+Ol+Chiki&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,8 +24,10 @@
             </div>
             <div class="header-right">
                 <div class="header-right-column">
-                    <img src="hanuman_ram_sita_pranam.jpg" alt="Hanuman Ram Sita Pranam" class="header-img">
-                    <select id="language-select" class="lang-dropdown" aria-label="Select language">
+                    <img src="hanuman_ram_sita_pranam.jpg" alt="Hanuman Ram Sita Pranam" class="header-img"
+                        data-i18n-alt="headerImageAlt">
+                    <select id="language-select" class="lang-dropdown" data-i18n-aria="selectLanguageAria"
+                        aria-label="Select language">
                         <option value="en" selected>English</option>
                         <option value="hi">हिन्दी (Hindi)</option>
                         <option value="gu">ગુજરાતી (Gujarati)</option>
@@ -37,7 +42,7 @@
                         <option value="as">অসমীয়া (Assamese)</option>
                         <option value="ur">اردو (Urdu)</option>
                         <option value="sa">संस्कृतम् (Sanskrit)</option>
-                        <option value="kok">कोंकणी (Konkani)</option>
+                        <option value="gom">कोंकणी (Konkani)</option>
                         <option value="ks">कॉशुर (Kashmiri)</option>
                         <option value="mni">মৈতৈলোন্ (Manipuri)</option>
                         <option value="ne">नेपाली (Nepali)</option>
@@ -54,20 +59,22 @@
         <main class="chat-container">
             <div class="chat-box" id="chat-box">
                 <div class="message ai-message">
-                    <p id="welcome-msg">Jay Shree Ram! Welcome Parth, how can I help you?</p>
+                    <p id="welcome-msg" lang="en" dir="ltr" translate="no" data-i18n="welcome" data-i18n-vars="name"></p>
                 </div>
             </div>
             <div class="input-area">
-                <input type="text" id="user-input" placeholder="Type your question here...">
+                <input type="text" id="user-input" data-i18n-placeholder="inputPlaceholder"
+                    placeholder="Type your question here...">
                 <div class="buttons-grid">
-                    <button id="mic-btn" class="action-btn">🎤 Mode: Off</button>
-                    <button id="speak-btn" class="action-btn">🔊 Listen</button>
-                    <button id="send-story-btn" class="action-btn story-btn">Story 📜</button>
-                    <button id="send-suggestion-btn" class="action-btn suggestion-btn">Suggestion 💡</button>
+                    <button id="mic-btn" class="action-btn" data-i18n="micModeOff">🎤 Mode: Off</button>
+                    <button id="speak-btn" class="action-btn" data-i18n="listen">🔊 Listen</button>
+                    <button id="send-story-btn" class="action-btn story-btn" data-i18n="storyBtn">Story 📜</button>
+                    <button id="send-suggestion-btn" class="action-btn suggestion-btn" data-i18n="suggestionBtn">Suggestion 💡</button>
                 </div>
             </div>
         </main>
     </div>
+    <script src="i18n.js"></script>
     <script src="script.js"></script>
 </body>
 
