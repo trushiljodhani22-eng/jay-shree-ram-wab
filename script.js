@@ -8,22 +8,46 @@ let awardedBadges = [];
 let questionCount = 0;
 
 // ૧. ભાષા મુજબ સ્વાગત મેસેજ (બધી ભાષાઓ અહીં સેટ છે)
+const DEFAULT_LANG = 'en';
+const EN_WELCOME = "Jay Shree Ram! Welcome Parth, how can I help you?";
+
 const translations = {
-    en: "Jay Shree Ram! Welcome Parth, how can I help you?",
+    en: EN_WELCOME,
     gu: "જય શ્રી રામ! આવો પાર્થ, હું તમારી શું મદદ કરી શકું?",
     hi: "जय श्री राम! आइये पार्थ, मैं आपकी क्या मदद कर सकता हूँ?",
     sa: "जय श्री राम! आगच्छ पार्थ...",
     mr: "जय श्री राम! या पार्थ...",
-    ta: "ஜெய் ஸ்ரீ ராம்! வாருங்கள் பார்த்தா..."
+    ta: "ஜெய் ஸ்ரீ ராம்! வாருங்கள் பார்த்தா...",
+    pa: EN_WELCOME,
+    bn: EN_WELCOME,
+    te: EN_WELCOME,
+    kn: EN_WELCOME,
+    ml: EN_WELCOME,
+    or: EN_WELCOME,
+    as: EN_WELCOME,
+    ur: EN_WELCOME,
+    kok: EN_WELCOME,
+    ks: EN_WELCOME,
+    mni: EN_WELCOME,
+    ne: EN_WELCOME,
+    sd: EN_WELCOME,
+    doi: EN_WELCOME,
+    mai: EN_WELCOME,
+    brx: EN_WELCOME,
+    sat: EN_WELCOME
 };
+
+function applyLanguage(lang) {
+    welcomeMsg.innerText = translations[lang] || translations[DEFAULT_LANG];
+}
 
 // ભાષા બદલવાનું લોજિક - Strict Fix
 langSelect.addEventListener('change', () => {
-    const selectedLang = langSelect.value;
-    if (translations[selectedLang]) {
-        welcomeMsg.innerText = translations[selectedLang];
-    }
+    applyLanguage(langSelect.value);
 });
+
+langSelect.value = DEFAULT_LANG;
+applyLanguage(DEFAULT_LANG);
 
 // ૨. ૫૦ બેચનો ડેટાબેઝ - (તમારા જૂના કોડ મુજબ અકબંધ છે)
 const badgeDatabase = {
