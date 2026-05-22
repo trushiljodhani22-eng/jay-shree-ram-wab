@@ -2,15 +2,18 @@
   "pageTitle": "Spiritual AI Guide",
   "selectLanguageAria": "Select language",
   "headerImageAlt": "Hanuman Ram Sita Pranam",
-  "welcome": "Jay Shree Ram! Welcome {name}, how can I help you?",
+  "welcome": "Jay Shree Ram! Welcome {name}, how can I help you today?",
   "inputPlaceholder": "Type your question here...",
   "micModeOff": "🎤 Mode: Off",
+  "micModeOn": "🎤 Mode: On",
   "listen": "🔊 Listen",
   "storyBtn": "Story 📜",
   "suggestionBtn": "Suggestion 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "Jay Shree Ram {name}! How can I help you?",
-  "chatResponseGu": "Jay Shree Ram {name}! How can I help you?",
-  "badgeEarned": "🎉 New Badge: Knowledge Seeker",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "Jay Shree Ram {name}! According to our sacred scriptures, I will try to guide you.",
+  "chatResponseGu": "Jay Shree Ram {name}! According to our sacred scriptures, I will try to guide you.",
+  "badgeEarned": "🎉 New Badge Earned: Knowledge Seeker",
+  "knowledgeSeekerTitle": "Knowledge Seeker Parth",
+  "storyResponse": "Jay Shree Ram {name}! Here is a sacred story for you from our scriptures.",
+  "suggestionResponse": "Jay Shree Ram {name}! Here is a divine suggestion for you from our scriptures."
 }

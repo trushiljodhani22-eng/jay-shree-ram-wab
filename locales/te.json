@@ -1,16 +1,19 @@
 {
-  "pageTitle": "ఆధ్యాత్మిక AI గైడ్",
-  "selectLanguageAria": "భాషను ఎంచుకోండి",
-  "headerImageAlt": "హనుమాన్ రామ సీత ప్రణామం",
-  "welcome": "జై శ్రీ రామ్! స్వాగతం {name}, నేను మీకు ఎలా సహాయం చేయగలను?",
+  "pageTitle": "ఆధ్యాత్మిక AI మార్గదర్శకుడు",
+  "selectLanguageAria": "భాష ఎంచుకోండి",
+  "headerImageAlt": "హనుమాన్ రామ్ సీతా ప్రణామ్",
+  "welcome": "జై శ్రీ రామ్! స్వాగతం {name}, నేను మీకు ఎలా సేవ చేయగలను?",
   "inputPlaceholder": "మీ ప్రశ్నను ఇక్కడ టైప్ చేయండి...",
   "micModeOff": "🎤 మోడ్: ఆఫ్",
+  "micModeOn": "🎤 మోడ్: ఆన్",
   "listen": "🔊 వినండి",
   "storyBtn": "కథ 📜",
   "suggestionBtn": "సూచన 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "జై శ్రీ రామ్ {name}! నేను మీకు ఎలా సేవ చేయగలను?",
-  "chatResponseGu": "జై శ్రీ రామ్ {name}! నేను మీకు ఎలా సేవ చేయగలను?",
-  "badgeEarned": "🎉 కొత్త బ్యాజ్: జ్ఞాన అన్వేషకుడు",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "జై శ్రీ రామ్ {name}! మన పవిత్ర శాస్త్రాల ప్రకారం మీకు మార్గం చూపించడానికి ప్రయత్నిస్తాను.",
+  "chatResponseGu": "జై శ్రీ రామ్ {name}! మన పవిత్ర శాస్త్రాల ప్రకారం మీకు మార్గం చూపించడానికి ప్రయత్నిస్తాను.",
+  "badgeEarned": "🎉 కొత్త బ్యాడ్జ్ వచ్చింది: జ్ఞాన పిపాసు",
+  "knowledgeSeekerTitle": "జ్ఞాన పిపాసు పార్థ",
+  "storyResponse": "జై శ్రీ రామ్ {name}! మన శాస్త్రాల నుండి మీ కోసం ఒక పవిత్ర కథ.",
+  "suggestionResponse": "జై శ్రీ రామ్ {name}! మన శాస్త్రాల నుండి మీ కోసం ఒక దివ్య సూచన."
 }

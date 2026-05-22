@@ -1,16 +1,19 @@
 {
-  "pageTitle": "अध्यात्मिक AI मार्गदर्शक",
+  "pageTitle": "आध्यात्मिक AI मार्गदर्शक",
   "selectLanguageAria": "भाषा निवडा",
   "headerImageAlt": "हनुमान राम सीता प्रणाम",
-  "welcome": "जय श्री राम! या {name}, मी तुमची कशी मदत करू शकतो?",
-  "inputPlaceholder": "तुमचा प्रश्न येथे लिहा...",
+  "welcome": "जय श्री राम! स्वागत आहे {name}, मी तुमची कशी सेवा करू शकतो?",
+  "inputPlaceholder": "येथे तुमचा प्रश्न लिहा...",
   "micModeOff": "🎤 मोड: बंद",
+  "micModeOn": "🎤 मोड: चालू",
   "listen": "🔊 ऐका",
   "storyBtn": "कथा 📜",
   "suggestionBtn": "सूचना 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "जय श्री राम {name}! मी तुमची कशी सेवा करू शकतो?",
-  "chatResponseGu": "जय श्री राम {name}! मी तुमची कशी सेवा करू शकतो?",
-  "badgeEarned": "🎉 नवीन बॅज: ज्ञान पिपासू",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "जय श्री राम {name}! आपल्या पवित्र शास्त्रांनुसार मी तुम्हाला मार्ग दाखवण्याचा प्रयत्न करेन।",
+  "chatResponseGu": "जय श्री राम {name}! आपल्या पवित्र शास्त्रांनुसार मी तुम्हाला मार्ग दाखवण्याचा प्रयत्न करेन।",
+  "badgeEarned": "🎉 नवीन बॅज मिळाला: ज्ञान पिपासु",
+  "knowledgeSeekerTitle": "ज्ञान पिपासु पार्थ",
+  "storyResponse": "जय श्री राम {name}! आपल्या शास्त्रांमधून तुमच्यासाठी एक पवित्र कथा।",
+  "suggestionResponse": "जय श्री राम {name}! आपल्या शास्त्रांमधून तुमच्यासाठी एक दिव्य सूचना।"
 }

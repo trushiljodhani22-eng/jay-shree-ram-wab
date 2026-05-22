@@ -1,16 +1,19 @@
 {
   "pageTitle": "आध्यात्मिक AI मार्गदर्शक",
-  "selectLanguageAria": "भाषा चुनो",
+  "selectLanguageAria": "बोली चुनो",
   "headerImageAlt": "हनुमान राम सीता प्रणाम",
-  "welcome": "जय श्री राम! स्वागत है {name}, मैं तुंदी किस तरियां मदद करी सकदा हां?",
-  "inputPlaceholder": "अपना सवाल इत्थे लिखो...",
+  "welcome": "जय श्री राम! जी आया {name}, मैं तुंदी किस चाल्लीं सेवा करी सकदा आं?",
+  "inputPlaceholder": "एत्थें अपना सुआल लिखो...",
   "micModeOff": "🎤 मोड: बंद",
-  "listen": "🔊 सुनो",
-  "storyBtn": "कहाणी 📜",
+  "micModeOn": "🎤 मोड: चालू",
+  "listen": "🔊 सुणो",
+  "storyBtn": "कथा 📜",
   "suggestionBtn": "सुझाव 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "जय श्री राम {name}! मैं तुंदी किस तरियां सेवा करी सकदा हां?",
-  "chatResponseGu": "जय श्री राम {name}! मैं तुंदी किस तरियां सेवा करी सकदा हां?",
-  "badgeEarned": "🎉 नयां बैज: ग्यान खोजी",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "जय श्री राम {name}! साड्डे पवित्तर शास्त्रें दे मुताबक मैं तुआनूं रस्ता दस्सने दी कोशश करांगा।",
+  "chatResponseGu": "जय श्री राम {name}! साड्डे पवित्तर शास्त्रें दे मुताबक मैं तुआनूं रस्ता दस्सने दी कोशश करांगा।",
+  "badgeEarned": "🎉 नवां बैज मिल्या: गियान पिपासू",
+  "knowledgeSeekerTitle": "गियान पिपासू पार्थ",
+  "storyResponse": "जय श्री राम {name}! साड्डे शास्त्रें च्यों तुंदे वास्ते इक पवित्तर कथा।",
+  "suggestionResponse": "जय श्री राम {name}! साड्डे शास्त्रें च्यों तुंदे वास्ते इक दिव्य सुझाव।"
 }

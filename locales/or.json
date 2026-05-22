@@ -1,16 +1,19 @@
 {
-  "pageTitle": "ଆଧ୍ୟାତ୍ମିକ AI ଗାଇଡ୍",
-  "selectLanguageAria": "ଭାଷା ବାଛନ୍ତୁ",
+  "pageTitle": "ଆଧ୍ୟାତ୍ମିକ AI ମାର୍ଗଦର୍ଶକ",
+  "selectLanguageAria": "ଭାଷା ଚୟନ କରନ୍ତୁ",
   "headerImageAlt": "ହନୁମାନ ରାମ ସୀତା ପ୍ରଣାମ",
   "welcome": "ଜୟ ଶ୍ରୀ ରାମ! ସ୍ୱାଗତ {name}, ମୁଁ ଆପଣଙ୍କୁ କିପରି ସାହାଯ୍ୟ କରିପାରିବି?",
-  "inputPlaceholder": "ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଏଠାରେ ଲେଖନ୍ତୁ...",
-  "micModeOff": "🎤 ମୋଡ୍: ବନ୍ଦ",
+  "inputPlaceholder": "ଏଠାରେ ଆପଣଙ୍କ ପ୍ରଶ୍ନ ଲିଖନ୍ତୁ...",
+  "micModeOff": "🎤 ମୋଡ: ବନ୍ଦ",
+  "micModeOn": "🎤 ମୋଡ: ଚାଲୁ",
   "listen": "🔊 ଶୁଣନ୍ତୁ",
-  "storyBtn": "କାହାଣୀ 📜",
+  "storyBtn": "କଥା 📜",
   "suggestionBtn": "ପରାମର୍ଶ 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "ଜୟ ଶ୍ରୀ ରାମ {name}! ମୁଁ ଆପଣଙ୍କୁ କିପରି ସେବା କରିପାରିବି?",
-  "chatResponseGu": "ଜୟ ଶ୍ରୀ ରାମ {name}! ମୁଁ ଆପଣଙ୍କୁ କିପରି ସେବା କରିପାରିବି?",
-  "badgeEarned": "🎉 ନୂଆ ବ୍ୟାଜ୍: ଜ୍ଞାନ ଅନ୍ୱେଷକ",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "ଜୟ ଶ୍ରୀ ରାମ {name}! ଆମ ପବିତ୍ର ଶାସ୍ତ୍ର ଅନୁସାରେ ଆପଣଙ୍କୁ ମାର୍ଗ ଦେଖାଇବାକୁ ଚେଷ୍ଟା କରିବି।",
+  "chatResponseGu": "ଜୟ ଶ୍ରୀ ରାମ {name}! ଆମ ପବିତ୍ର ଶାସ୍ତ୍ର ଅନୁସାରେ ଆପଣଙ୍କୁ ମାର୍ଗ ଦେଖାଇବାକୁ ଚେଷ୍ଟା କରିବି।",
+  "badgeEarned": "🎉 ନୂଆ ବ୍ୟାଜ ମିଳିଲା: ଜ୍ଞାନ ପିପାସୁ",
+  "knowledgeSeekerTitle": "ଜ୍ଞାନ ପିପାସୁ ପାର୍ଥ",
+  "storyResponse": "ଜୟ ଶ୍ରୀ ରାମ {name}! ଆମ ଶାସ୍ତ୍ରରୁ ଆପଣଙ୍କ ପାଇଁ ଏକ ପବିତ୍ର କଥା।",
+  "suggestionResponse": "ଜୟ ଶ୍ରୀ ରାମ {name}! ଆମ ଶାସ୍ତ୍ରରୁ ଆପଣଙ୍କ ପାଇଁ ଏକ ଦିବ୍ୟ ପରାମର୍ଶ।"
 }

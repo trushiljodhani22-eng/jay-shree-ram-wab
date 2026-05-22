@@ -97,3 +97,73 @@ userInput.addEventListener("keypress", (e) => {
 });
 
 window.addEventListener("languagechange", retranslateDynamicMessages);
+
+// ============================================================
+// KRISHNA FLUTE — Continuous Background Music
+// File: krishana_flute.mp3
+// Rules:
+//   - Autoplay on page load (if browser allows)
+//   - If blocked, start on first user interaction (click/tap/key)
+//   - Loop nonstop, volume 0.28
+//   - Only ONE instance — no duplicate playback
+//   - Never restart if already playing
+// ============================================================
+const fluteAudio = new Audio("krishna_flute.mp3");
+fluteAudio.loop   = true;
+fluteAudio.volume = 0.28;
+
+// Track whether music has started — prevents duplicate starts
+let fluteStarted = false;
+
+/**
+ * Tries to play the flute. Safe — swallows autoplay errors.
+ * Once started, removes all first-interaction listeners.
+ */
+function startFlute() {
+    // Guard: do not restart if already playing
+    if (fluteStarted) return;
+
+    fluteAudio.play().then(() => {
+        fluteStarted = true;
+        removeInteractionListeners();
+    }).catch(() => {
+        // Browser blocked autoplay — will retry on first interaction
+    });
+}
+
+/**
+ * Called on first user interaction if autoplay was blocked.
+ * Starts music once and removes itself from all event types.
+ */
+function onFirstInteraction() {
+    if (fluteStarted) {
+        removeInteractionListeners();
+        return;
+    }
+    fluteAudio.play().then(() => {
+        fluteStarted = true;
+        removeInteractionListeners();
+    }).catch(() => {
+        // Still blocked — do nothing, try again next interaction
+    });
+}
+
+// One-time interaction listeners (removed as soon as music starts)
+const INTERACTION_EVENTS = ["click", "touchstart", "keypress"];
+
+function removeInteractionListeners() {
+    INTERACTION_EVENTS.forEach((evt) => {
+        document.removeEventListener(evt, onFirstInteraction);
+    });
+}
+
+function addInteractionListeners() {
+    INTERACTION_EVENTS.forEach((evt) => {
+        document.addEventListener(evt, onFirstInteraction, { once: false });
+    });
+}
+
+// Try autoplay immediately; attach fallback listeners regardless
+startFlute();
+addInteractionListeners();
+// ============================================================

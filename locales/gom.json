@@ -1,16 +1,19 @@
 {
   "pageTitle": "आध्यात्मिक AI मार्गदर्शक",
-  "selectLanguageAria": "भास चोडा",
+  "selectLanguageAria": "भाशा निवड",
   "headerImageAlt": "हनुमान राम सीता प्रणाम",
-  "welcome": "जय श्री राम! येवकार {name}, हांव तुमकां कशें मदत करूं शकता?",
-  "inputPlaceholder": "तुमचो प्रस्न हांगा बरयात...",
+  "welcome": "जय श्री राम! स्वागत {name}, हाव तुमकां कशें मजत करूं?",
+  "inputPlaceholder": "हांगा तुमचो प्रस्न बरयात...",
   "micModeOff": "🎤 मोड: बंद",
-  "listen": "🔊 आयकात",
+  "micModeOn": "🎤 मोड: चालू",
+  "listen": "🔊 आयक",
   "storyBtn": "कथा 📜",
-  "suggestionBtn": "सुचोव 💡",
+  "suggestionBtn": "सुचोवणी 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "जय श्री राम {name}! हांव तुमकां कशी सेवा करूं शकता?",
-  "chatResponseGu": "जय श्री राम {name}! हांव तुमकां कशी सेवा करूं शकता?",
-  "badgeEarned": "🎉 नवो बेज: ज्ञानेचो शोधक",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "जय श्री राम {name}! आमच्या पवित्र शास्त्रां प्रमाण तुमकां मार्ग दाखोवपाचो प्रयत्न करतलों।",
+  "chatResponseGu": "जय श्री राम {name}! आमच्या पवित्र शास्त्रां प्रमाण तुमकां मार्ग दाखोवपाचो प्रयत्न करतलों।",
+  "badgeEarned": "🎉 नवें बॅज मेळ्ळें: ज्ञान पिपासु",
+  "knowledgeSeekerTitle": "ज्ञान पिपासु पार्थ",
+  "storyResponse": "जय श्री राम {name}! आमच्या शास्त्रांतल्यान तुमच्या खातीर एक पवित्र कथा।",
+  "suggestionResponse": "जय श्री राम {name}! आमच्या शास्त्रांतल्यान तुमच्या खातीर एक दिव्य सुचोवणी।"
 }

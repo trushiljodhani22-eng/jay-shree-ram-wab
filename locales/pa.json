@@ -1,16 +1,19 @@
 {
-  "pageTitle": "ਅਧਿਆਤਮਿਕ AI ਗਾਈਡ",
+  "pageTitle": "ਅਧਿਆਤਮਿਕ AI ਮਾਰਗਦਰਸ਼ਕ",
   "selectLanguageAria": "ਭਾਸ਼ਾ ਚੁਣੋ",
-  "headerImageAlt": "ਹਨੁਮਾਨ ਰਾਮ ਸੀਤਾ ਪ੍ਰਣਾਮ",
-  "welcome": "ਜਯ ਸ਼੍ਰੀ ਰਾਮ! ਸਵਾਗਤ ਹੈ {name}, ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦਾ ਹਾਂ?",
-  "inputPlaceholder": "ਆਪਣਾ ਸਵਾਲ ਇੱਥੇ ਲਿਖੋ...",
+  "headerImageAlt": "ਹਨੂਮਾਨ ਰਾਮ ਸੀਤਾ ਪ੍ਰਣਾਮ",
+  "welcome": "ਜੈ ਸ਼੍ਰੀ ਰਾਮ! ਜੀ ਆਇਆਂ ਨੂੰ {name}, ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਸੇਵਾ ਕਰ ਸਕਦਾ ਹਾਂ?",
+  "inputPlaceholder": "ਇੱਥੇ ਆਪਣਾ ਸਵਾਲ ਲਿਖੋ...",
   "micModeOff": "🎤 ਮੋਡ: ਬੰਦ",
+  "micModeOn": "🎤 ਮੋਡ: ਚਾਲੂ",
   "listen": "🔊 ਸੁਣੋ",
-  "storyBtn": "ਕਹਾਣੀ 📜",
+  "storyBtn": "ਕਥਾ 📜",
   "suggestionBtn": "ਸੁਝਾਅ 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "ਜਯ ਸ਼੍ਰੀ ਰਾਮ {name}! ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਸੇਵਾ ਕਰ ਸਕਦਾ ਹਾਂ?",
-  "chatResponseGu": "ਜਯ ਸ਼੍ਰੀ ਰਾਮ {name}! ਮੈਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਸੇਵਾ ਕਰ ਸਕਦਾ ਹਾਂ?",
-  "badgeEarned": "🎉 ਨਵਾਂ ਬੈਜ: ਗਿਆਨ ਖੋਜੀ",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "ਜੈ ਸ਼੍ਰੀ ਰਾਮ {name}! ਸਾਡੇ ਪਵਿੱਤਰ ਗ੍ਰੰਥਾਂ ਅਨੁਸਾਰ ਮੈਂ ਤੁਹਾਨੂੰ ਮਾਰਗ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਾਂਗਾ।",
+  "chatResponseGu": "ਜੈ ਸ਼੍ਰੀ ਰਾਮ {name}! ਸਾਡੇ ਪਵਿੱਤਰ ਗ੍ਰੰਥਾਂ ਅਨੁਸਾਰ ਮੈਂ ਤੁਹਾਨੂੰ ਮਾਰਗ ਦਿਖਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਾਂਗਾ।",
+  "badgeEarned": "🎉 ਨਵਾਂ ਬੈਜ ਮਿਲਿਆ: ਗਿਆਨ ਪਿਪਾਸੂ",
+  "knowledgeSeekerTitle": "ਗਿਆਨ ਪਿਪਾਸੂ ਪਾਰਥ",
+  "storyResponse": "ਜੈ ਸ਼੍ਰੀ ਰਾਮ {name}! ਸਾਡੇ ਗ੍ਰੰਥਾਂ ਵਿੱਚੋਂ ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਪਵਿੱਤਰ ਕਥਾ।",
+  "suggestionResponse": "ਜੈ ਸ਼੍ਰੀ ਰਾਮ {name}! ਸਾਡੇ ਗ੍ਰੰਥਾਂ ਵਿੱਚੋਂ ਤੁਹਾਡੇ ਲਈ ਇੱਕ ਦਿਵਯ ਸੁਝਾਅ।"
 }

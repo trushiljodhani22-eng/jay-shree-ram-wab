@@ -1,16 +1,19 @@
 {
-  "pageTitle": "ಆಧ್ಯಾತ್ಮಿಕ AI ಮಾರ್ಗದರ್ಶಿ",
-  "selectLanguageAria": "ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
-  "headerImageAlt": "ಹನುಮಾನ್ ರಾಮ ಸೀತಾ ಪ್ರಣಾಮ",
-  "welcome": "ಜಯ ಶ್ರೀ ರಾಮ್! ಸ್ವಾಗತ {name}, ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸಹಾಯ ಮಾಡಬಹುದು?",
+  "pageTitle": "ಆಧ್ಯಾತ್ಮಿಕ AI ಮಾರ್ಗದರ್ಶಕ",
+  "selectLanguageAria": "ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ",
+  "headerImageAlt": "ಹನುಮಾನ್ ರಾಮ್ ಸೀತಾ ಪ್ರಣಾಮ",
+  "welcome": "ಜಯ ಶ್ರೀ ರಾಮ್! ಸ್ವಾಗತ {name}, ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸೇವೆ ಮಾಡಲಿ?",
   "inputPlaceholder": "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ...",
   "micModeOff": "🎤 ಮೋಡ್: ಆಫ್",
+  "micModeOn": "🎤 ಮೋಡ್: ಆನ್",
   "listen": "🔊 ಕೇಳಿ",
   "storyBtn": "ಕಥೆ 📜",
   "suggestionBtn": "ಸಲಹೆ 💡",
   "loadingOm": "ॐ...",
-  "chatResponse": "ಜಯ ಶ್ರೀ ರಾಮ್ {name}! ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸೇವೆ ಮಾಡಬಹುದು?",
-  "chatResponseGu": "ಜಯ ಶ್ರೀ ರಾಮ್ {name}! ನಾನು ನಿಮಗೆ ಹೇಗೆ ಸೇವೆ ಮಾಡಬಹುದು?",
-  "badgeEarned": "🎉 ಹೊಸ ಬ್ಯಾಡ್ಜ್: ಜ್ಞಾನ ಅನ್ವೇಷಕ",
-  "knowledgeSeekerTitle": "Knowledge Seeker Parth"
+  "chatResponse": "ಜಯ ಶ್ರೀ ರಾಮ್ {name}! ನಮ್ಮ ಪವಿತ್ರ ಶಾಸ್ತ್ರಗಳ ಪ್ರಕಾರ ನಿಮಗೆ ಮಾರ್ಗ ತೋರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತೇನೆ.",
+  "chatResponseGu": "ಜಯ ಶ್ರೀ ರಾಮ್ {name}! ನಮ್ಮ ಪವಿತ್ರ ಶಾಸ್ತ್ರಗಳ ಪ್ರಕಾರ ನಿಮಗೆ ಮಾರ್ಗ ತೋರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತೇನೆ.",
+  "badgeEarned": "🎉 ಹೊಸ ಬ್ಯಾಡ್ಜ್ ಸಿಕ್ಕಿತು: ಜ್ಞಾನ ಪಿಪಾಸು",
+  "knowledgeSeekerTitle": "ಜ್ಞಾನ ಪಿಪಾಸು ಪಾರ್ಥ",
+  "storyResponse": "ಜಯ ಶ್ರೀ ರಾಮ್ {name}! ನಮ್ಮ ಶಾಸ್ತ್ರಗಳಿಂದ ನಿಮಗಾಗಿ ಒಂದು ಪವಿತ್ರ ಕಥೆ.",
+  "suggestionResponse": "ಜಯ ಶ್ರೀ ರಾಮ್ {name}! ನಮ್ಮ ಶಾಸ್ತ್ರಗಳಿಂದ ನಿಮಗಾಗಿ ಒಂದು ದಿವ್ಯ ಸಲಹೆ."
 }
