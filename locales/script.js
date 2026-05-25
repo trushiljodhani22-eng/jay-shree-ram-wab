@@ -839,7 +839,8 @@ window.addEventListener("languagechange", retranslateDynamicMessages);
 // KRISHNA FLUTE — Continuous Background Music
 // File: krishana_flute.mp3
 // Rules:
-//   - Start ONLY after successful login (spiritual-auth-success event)
+//   - Autoplay on page load (if browser allows)
+//   - If blocked, start on first user interaction (click/tap/key)
 //   - Loop nonstop, volume 0.28
 //   - Only ONE instance — no duplicate playback
 //   - Never restart if already playing
@@ -899,7 +900,9 @@ function addInteractionListeners() {
     });
 }
 
-// Start flute ONLY after successful login/auth.
+// Try autoplay immediately; attach fallback listeners regardless
+addInteractionListeners();
+// Start flute only after successful login/auth.
 window.addEventListener("spiritual-auth-success", () => {
     startFlute();
     addInteractionListeners();
