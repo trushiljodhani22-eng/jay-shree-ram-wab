@@ -121,6 +121,7 @@ auth.onAuthStateChanged((user) => {
     const userPhoto    = document.getElementById("user-photo");
     const userName     = document.getElementById("user-name");
     const userEmail    = document.getElementById("user-email");
+    const logoutBtn    = document.getElementById("logout-btn");
 
     if (user) {
         // Show main website
@@ -133,6 +134,9 @@ auth.onAuthStateChanged((user) => {
         if (userName)    userName.textContent = user.displayName || user.email || "User";
         if (userEmail)   userEmail.textContent = user.email || "";
 
+        // Show logout button
+        if (logoutBtn) logoutBtn.style.display = "inline-block";
+
         // Signal to script.js that auth succeeded — starts flute music
         window.dispatchEvent(new CustomEvent("spiritual-auth-success"));
 
@@ -141,6 +145,7 @@ auth.onAuthStateChanged((user) => {
         if (loginScreen) loginScreen.style.display = "flex";
         if (mainContent)  mainContent.classList.add("auth-hidden");
         if (userProfile) userProfile.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "none";
         clearSafeUserProfile();
     }
 });
