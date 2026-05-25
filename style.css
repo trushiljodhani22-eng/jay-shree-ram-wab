@@ -1411,7 +1411,7 @@ body {
     margin: 12px;
     padding: 18px;
     backdrop-filter: blur(8px);
-}sidebar
+}
 /* =========================================
    HISTORY SHOW ONLY WHEN SIDEBAR OPEN
 ========================================= */
@@ -1494,4 +1494,455 @@ height: 2px;
 background: rgba(255,255,255,0.75);
 border-radius: 10px;
 z-index: 2;
+}
+/* =========================================
+   SIDEBAR BUTTON COLUMN + HISTORY FIX
+========================================= */
+
+/* White line/strip area should contain all top buttons */
+.sidebar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 12px 10px !important;
+}
+
+/* All sidebar buttons stay inside the left sidebar width */
+.sidebar-btn {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    border-radius: 14px !important;
+    margin-bottom: 8px !important;
+}
+
+/* Remove big stretched white horizontal bar effect */
+.sidebar-btn:hover,
+.sidebar-btn:focus {
+    width: 100% !important;
+}
+
+/* Hide history when sidebar is closed */
+.sidebar-history {
+    display: none !important;
+}
+
+/* Show history only when sidebar opens */
+.sidebar:hover .sidebar-history,
+.sidebar.sidebar-open .sidebar-history {
+    display: block !important;
+}
+
+/* Remove Bhagavad Gita sample history */
+.history-item:has(.history-title) .history-title {
+    display: inline !important;
+}
+
+.history-item .history-title {
+    font-size: 14px !important;
+}
+
+/* Hide all history action menus by default */
+.history-action-menu {
+    display: none !important;
+}
+
+/* Show 3-dot only on real history item hover */
+.history-menu-btn {
+    display: none !important;
+}
+
+.history-item:hover .history-menu-btn {
+    display: inline-flex !important;
+}
+
+/* 3-dot should appear only inside history, not near buttons */
+.sidebar > .history-menu-btn,
+.sidebar-btn .history-menu-btn {
+    display: none !important;
+}
+
+/* History item clean layout */
+.history-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 12px !important;
+    border-radius: 12px !important;
+}
+/* =========================================
+   FINAL SIDEBAR FIX
+========================================= */
+
+/* FORCE SIDEBAR LAYOUT */
+
+.sidebar {
+    width: 72px !important;
+    overflow-x: hidden !important;
+}
+
+.sidebar:hover,
+.sidebar.sidebar-open {
+    width: 250px !important;
+}
+
+/* BUTTONS INSIDE SIDEBAR ONLY */
+
+.sidebar-btn,
+.user-menu-btn {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: flex-start !important;
+    overflow: hidden !important;
+}
+
+/* REMOVE STRETCHED WHITE BAR */
+
+.sidebar-btn:hover,
+.user-menu-btn:hover {
+    background: rgba(255,255,255,0.45) !important;
+}
+
+/* LABELS HIDDEN UNTIL OPEN */
+
+.sidebar-label,
+#sidebar-user-name {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+.sidebar:hover .sidebar-label,
+.sidebar.sidebar-open .sidebar-label,
+.sidebar:hover #sidebar-user-name,
+.sidebar.sidebar-open #sidebar-user-name {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* HISTORY HIDDEN BY DEFAULT */
+
+.sidebar-history {
+    display: none !important;
+}
+
+/* SHOW HISTORY ONLY WHEN OPEN */
+
+.sidebar:hover .sidebar-history,
+.sidebar.sidebar-open .sidebar-history {
+    display: block !important;
+}
+
+/* ONLY HISTORY ITEMS HAVE 3 DOT */
+
+.history-menu-btn {
+    display: none !important;
+}
+
+.history-item:hover .history-menu-btn {
+    display: inline-flex !important;
+}
+
+/* NEVER SHOW 3 DOT ON SIDEBAR BUTTONS */
+
+.sidebar-btn .history-menu-btn,
+.sidebar > .history-menu-btn {
+    display: none !important;
+}
+
+/* HIDE ACTION MENU BY DEFAULT */
+
+.history-action-menu {
+    display: none !important;
+}
+
+/* CLEAN HISTORY ROW */
+
+.history-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+/* REMOVE EXTRA SAMPLE HISTORY */
+
+.history-title {
+    font-size: 14px !important;
+}
+/* =========================================
+   FINAL SIDEBAR HOVER EFFECT
+   Icons only when closed, labels on hover
+========================================= */
+
+/* --- Sidebar closed: only icons visible --- */
+.sidebar {
+    width: 72px !important;
+    overflow: hidden !important;
+    transition: width 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* --- Sidebar open on hover --- */
+.sidebar:hover,
+.sidebar.sidebar-open {
+    width: 250px !important;
+    box-shadow: 8px 0 30px rgba(0,0,0,0.13) !important;
+}
+
+/* --- Icons: always visible, fixed size --- */
+.sidebar-icon {
+    min-width: 24px !important;
+    width: 24px !important;
+    font-size: 21px !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+
+/* --- Labels: hidden when sidebar closed --- */
+.sidebar-label,
+#sidebar-user-name {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    white-space: nowrap !important;
+    transition: opacity 0.2s ease !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    overflow: hidden !important;
+}
+
+/* --- Labels: visible when sidebar open --- */
+.sidebar:hover .sidebar-label,
+.sidebar.sidebar-open .sidebar-label,
+.sidebar:hover #sidebar-user-name,
+.sidebar.sidebar-open #sidebar-user-name {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* --- Sidebar buttons: compact row --- */
+.sidebar-btn,
+.user-menu-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    width: 100% !important;
+    padding: 13px 18px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    border-radius: 14px !important;
+}
+
+/* --- History: hidden when sidebar closed --- */
+.sidebar-history {
+    display: none !important;
+}
+.sidebar:hover .sidebar-history,
+.sidebar.sidebar-open .sidebar-history {
+    display: block !important;
+}
+
+/* --- Main content shift on sidebar hover --- */
+#main-content {
+    margin-left: 72px !important;
+    width: calc(100% - 72px) !important;
+    transition: margin-left 0.3s ease, width 0.3s ease !important;
+}
+.sidebar:hover ~ #main-content,
+.sidebar.sidebar-open ~ #main-content {
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+}
+
+/* --- Input area shift on sidebar hover --- */
+.sidebar:hover ~ #main-content .input-area,
+.sidebar.sidebar-open ~ #main-content .input-area {
+    left: 250px !important;
+    max-width: calc(100% - 250px) !important;
+}
+
+/* --- Mobile --- */
+@media (max-width: 768px) {
+    .sidebar { width: 60px !important; }
+    .sidebar:hover, .sidebar.sidebar-open { width: 210px !important; }
+    #main-content { margin-left: 60px !important; width: calc(100% - 60px) !important; }
+    .sidebar:hover ~ #main-content, .sidebar.sidebar-open ~ #main-content {
+        margin-left: 210px !important; width: calc(100% - 210px) !important;
+    }
+    .input-area { left: 60px !important; max-width: calc(100% - 60px) !important; }
+    .sidebar:hover ~ #main-content .input-area, .sidebar.sidebar-open ~ #main-content .input-area {
+        left: 210px !important; max-width: calc(100% - 210px) !important;
+    }
+}
+/* =========================================
+   POWERFUL USER MENU BOX
+========================================= */
+.sidebar-user {
+    margin-top: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    padding: 10px 0 !important;
+}
+.user-menu-btn {
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 14px !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+    cursor: pointer !important;
+}
+.user-menu-btn:hover {
+    background: rgba(255,255,255,0.45) !important;
+}
+#sidebar-user-initial {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #5b3200 !important;
+    border: 2px solid rgba(255, 179, 59, 0.55) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12) !important;
+}
+.user-menu-panel {
+    display: none !important;
+    position: absolute !important;
+    left: 58px !important;
+    bottom: 10px !important;
+    width: 240px !important;
+    background: #dceeff !important;
+    border: 1px solid rgba(80, 150, 210, 0.35) !important;
+    border-radius: 18px !important;
+    padding: 12px !important;
+    box-shadow: 0 14px 35px rgba(0,0,0,0.22) !important;
+    z-index: 100000 !important;
+}
+.user-menu-panel.user-menu-open {
+    display: block !important;
+}
+.sidebar-user-email {
+    font-size: 0.78rem !important;
+    color: rgba(30, 60, 90, 0.68) !important;
+    font-weight: 700 !important;
+    margin: 0 0 10px 0 !important;
+    padding: 8px 10px !important;
+    word-break: break-word !important;
+    border-bottom: 1px solid rgba(80, 150, 210, 0.25) !important;
+}
+.user-menu-option {
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    color: #15324a !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 11px 10px !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-size: 0.92rem !important;
+    font-weight: 800 !important;
+    text-align: left !important;
+}
+.user-menu-option:hover {
+    background: rgba(255,255,255,0.55) !important;
+}
+.logout-option {
+    color: #b42318 !important;
+}
+@media (max-width: 768px) {
+    .user-menu-panel {
+        left: 54px !important;
+        width: 220px !important;
+    }
+}
+/* =========================================
+   PROFILE MODAL SYSTEM
+========================================= */
+.profile-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(8px);
+    z-index: 999999;
+    align-items: center;
+    justify-content: center;
+}
+.profile-modal.profile-modal-open {
+    display: flex;
+}
+.profile-modal-content {
+    width: 320px;
+    background: #dceeff;
+    border-radius: 24px;
+    padding: 28px 24px;
+    position: relative;
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.25);
+    text-align: center;
+}
+.close-profile-modal {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+.profile-avatar-wrapper {
+    position: relative;
+    width: fit-content;
+    margin: 0 auto 18px auto;
+}
+.profile-avatar {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid rgba(255,255,255,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.3rem;
+    font-weight: 900;
+    color: #5b3200;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.15);
+}
+.profile-camera-btn {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow:
+        0 6px 14px rgba(0,0,0,0.15);
+    font-size: 1rem;
+}
+.profile-email {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: rgba(20,40,70,0.75);
+    word-break: break-word;
 }

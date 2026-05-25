@@ -32,68 +32,57 @@
             <p id="login-error" class="login-error"></p>
         </div>
     </div>
-    <div id="main-content"
 
-Immediately BEFORE this main-content div, add the following sidebar HTML:
-
-<aside id="sidebar" class="sidebar">
-  <button id="sidebar-toggle" class="sidebar-btn" type="button" title="Open Slider">
-    <span class="sidebar-icon">☰</span>
-    <span class="sidebar-label">Open Slider</span>
-  </button>
-
-  <button id="new-chat-btn" class="sidebar-btn" type="button" title="New Chat">
-    <span class="sidebar-icon">＋</span>
-    <span class="sidebar-label">New Chat</span>
-  </button>
-
-  <button id="search-chat-btn" class="sidebar-btn" type="button" title="Search Chats">
-    <span class="sidebar-icon">🔍</span>
-    <span class="sidebar-label">Search Chats</span>
-  </button>
-
-  <button id="books-btn" class="sidebar-btn" type="button" title="Books">
-    <span class="sidebar-icon">📚</span>
-    <span class="sidebar-label">Books</span>
-  </button>
-
-  <div id="sidebar-history" class="sidebar-history">
-    <div class="history-item">
-      <span class="history-title">Recent Chat</span>
-      <button class="history-menu-btn" type="button">⋮</button>
-      <div class="history-action-menu">
-        <button type="button">🔗 Share</button>
-        <button type="button">✏️ Rename</button>
-        <button type="button">🗑️ Delete</button>
-      </div>
-    </div>
-  </div>
-  <div class="history-item">
-    <span class="history-title">Bhagvad Gita</span>
-    <button class="history-menu-btn" type="button">⋮</button>
-    <div class="history-action-menu">
-      <button type="button">🔗 Share</button>
-      <button type="button">✏️ Rename</button>
-      <button type="button">🗑️ Delete</button>
-    </div>
-  </div>
-</div>
-
-  <div class="sidebar-user">
-    <button id="user-menu-btn" class="user-menu-btn" type="button">
-      <span id="sidebar-user-initial">U</span>
-      <span id="sidebar-user-name">User</span>
-    </button>
-
-    <div id="user-menu-panel" class="user-menu-panel">
-      <p id="sidebar-user-email" class="sidebar-user-email">user@email.com</p>
-      <button type="button">⭐Upgrade Plan</button>
-      <button type="button">👤Profile</button>
-      <div class="user-menu-language-slot"></div>
-      <button id="logout-btn" type="button">Logout</button>
-    </div>
-  </div>
-</aside>
+    <aside id="sidebar" class="sidebar">
+        <button id="sidebar-toggle" class="sidebar-btn" type="button" title="Open Slider">
+            <span class="sidebar-icon">☰</span>
+            <span class="sidebar-label">Open Slider</span>
+        </button>
+        <button id="new-chat-btn" class="sidebar-btn" type="button" title="New Chat">
+            <span class="sidebar-icon">＋</span>
+            <span class="sidebar-label">New Chat</span>
+        </button>
+        <button id="search-chat-btn" class="sidebar-btn" type="button" title="Search Chats">
+            <span class="sidebar-icon">🔍</span>
+            <span class="sidebar-label">Search Chats</span>
+        </button>
+        <button id="books-btn" class="sidebar-btn" type="button" title="Books">
+            <span class="sidebar-icon">📚</span>
+            <span class="sidebar-label">Books</span>
+        </button>
+        <div id="sidebar-history" class="sidebar-history">
+            <div class="history-item">
+                <span class="history-title">Recent Chat</span>
+                <button class="history-menu-btn" type="button" title="Chat options">⋮</button>
+                <div class="history-action-menu">
+                    <button type="button">🔗 Share</button>
+                    <button type="button">✏️ Rename</button>
+                    <button type="button">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-user">
+          <button id="user-menu-btn" class="user-menu-btn" type="button" aria-label="Open user menu">
+            <span id="sidebar-user-initial">U</span>
+            <span id="sidebar-user-name" class="sidebar-label">User</span>
+          </button>
+          <div id="user-menu-panel" class="user-menu-panel">
+            <p id="sidebar-user-email" class="sidebar-user-email">user@email.com</p>
+            <button id="upgrade-plan-btn" class="user-menu-option" type="button">
+              <span>⭐</span>
+              <span>Upgrade Plan</span>
+            </button>
+            <button id="profile-btn" class="user-menu-option" type="button">
+              <span>👤</span>
+              <span>Profile</span>
+            </button>
+            <button id="logout-btn" class="user-menu-option logout-option" type="button">
+              <span>🚪</span>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+    </aside>
 
     <div id="main-content" class="auth-hidden">
         <header>
@@ -157,6 +146,34 @@ Immediately BEFORE this main-content div, add the following sidebar HTML:
             </div>
         </main>
     </div>
+    <!-- =========================================
+         PROFILE MODAL
+    ========================================= -->
+    <div id="profile-modal" class="profile-modal">
+      <div class="profile-modal-content">
+        <button id="close-profile-modal" class="close-profile-modal">
+          ✕
+        </button>
+        <div class="profile-avatar-wrapper">
+          <div id="profile-avatar" class="profile-avatar">
+            U
+          </div>
+          <label for="profile-image-input" class="profile-camera-btn">
+            📷
+          </label>
+          <input
+            type="file"
+            id="profile-image-input"
+            accept="image/*"
+            hidden
+          >
+        </div>
+        <p id="profile-email" class="profile-email">
+          user@email.com
+        </p>
+      </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="auth.js"></script>

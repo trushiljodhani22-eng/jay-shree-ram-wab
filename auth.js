@@ -136,6 +136,9 @@ auth.onAuthStateChanged((user) => {
         // Signal to script.js that auth succeeded — starts flute music
         window.dispatchEvent(new CustomEvent("spiritual-auth-success"));
 
+        // Update sidebar user menu with logged-in user data
+        updateSidebarUserMenu(user);
+
     } else {
         // Show login screen
         if (loginScreen) loginScreen.style.display = "flex";
@@ -207,4 +210,62 @@ if (typeof auth !== "undefined") {
             updateSidebarUserProfile(user);
         }
     });
+}
+// =========================================
+// UPDATE SIDEBAR USER MENU FROM FIREBASE USER
+// =========================================
+function updateSidebarUserMenu(user) {
+
+    if (!user) return;
+
+    const initialEl =
+        document.getElementById("sidebar-user-initial");
+
+    const nameEl =
+        document.getElementById("sidebar-user-name");
+
+    const emailEl =
+        document.getElementById("sidebar-user-email");
+
+    const profileEmail =
+        document.getElementById("profile-email");
+
+    const email =
+        user.email || "";
+
+    const displayName =
+        user.displayName || "";
+
+    const source =
+        displayName || email || "User";
+
+    const initial =
+        source.charAt(0).toUpperCase();
+
+    if (initialEl) {
+        initialEl.textContent = initial;
+    }
+
+    if (nameEl) {
+        nameEl.textContent =
+            displayName || email;
+    }
+
+    if (emailEl) {
+        emailEl.textContent = email;
+    }
+
+    if (profileEmail) {
+        profileEmail.textContent = email;
+    }
+
+    localStorage.setItem(
+        "sidebarUserEmail",
+        email
+    );
+
+    localStorage.setItem(
+        "sidebarUserInitial",
+        initial
+    );
 }

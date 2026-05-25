@@ -1175,3 +1175,119 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Final safety check completed.");
 });
+// =========================================
+// POWERFUL USER MENU DROPDOWN
+// =========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const userMenuBtn = document.getElementById("user-menu-btn");
+    const userMenuPanel = document.getElementById("user-menu-panel");
+    if (!userMenuBtn || !userMenuPanel) return;
+    if (userMenuBtn.dataset.menuInit) return;
+    userMenuBtn.dataset.menuInit = "true";
+    userMenuBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        userMenuPanel.classList.toggle("user-menu-open");
+    });
+    userMenuPanel.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+    document.addEventListener("click", () => {
+        userMenuPanel.classList.remove("user-menu-open");
+    });
+    const upgradeBtn = document.getElementById("upgrade-plan-btn");
+    const profileBtn = document.getElementById("profile-btn");
+    if (upgradeBtn) {
+        upgradeBtn.addEventListener("click", () => {
+            alert("Upgrade Plan feature will be added soon.");
+        });
+    }
+    if (profileBtn) {
+        profileBtn.addEventListener("click", () => {
+            alert("Profile feature will be added soon.");
+        });
+    }
+});
+// =========================================
+// PROFILE MODAL + IMAGE UPLOAD
+// =========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const profileBtn =
+        document.getElementById("profile-btn");
+    const profileModal =
+        document.getElementById("profile-modal");
+    const closeProfileModal =
+        document.getElementById("close-profile-modal");
+    const profileAvatar =
+        document.getElementById("profile-avatar");
+    const profileEmail =
+        document.getElementById("profile-email");
+    const profileImageInput =
+        document.getElementById("profile-image-input");
+    // =========================================
+    // OPEN PROFILE MODAL
+    // =========================================
+    if (profileBtn && profileModal) {
+        profileBtn.addEventListener("click", () => {
+            profileModal.classList.add("profile-modal-open");
+            const savedEmail =
+                localStorage.getItem("sidebarUserEmail");
+            const savedInitial =
+                localStorage.getItem("sidebarUserInitial");
+            const savedProfileImage =
+                localStorage.getItem("sidebarProfileImage");
+            if (profileEmail && savedEmail) {
+                profileEmail.textContent = savedEmail;
+            }
+            if (profileAvatar && savedInitial) {
+                profileAvatar.textContent = savedInitial;
+            }
+            if (profileAvatar && savedProfileImage) {
+                profileAvatar.style.backgroundImage =
+                    `url(${savedProfileImage})`;
+                profileAvatar.textContent = "";
+            }
+        });
+    }
+    // =========================================
+    // CLOSE PROFILE MODAL
+    // =========================================
+    if (closeProfileModal && profileModal) {
+        closeProfileModal.addEventListener("click", () => {
+            profileModal.classList.remove("profile-modal-open");
+        });
+    }
+    // =========================================
+    // CLICK OUTSIDE TO CLOSE
+    // =========================================
+    if (profileModal) {
+        profileModal.addEventListener("click", (event) => {
+            if (event.target === profileModal) {
+                profileModal.classList.remove("profile-modal-open");
+            }
+        });
+    }
+    // =========================================
+    // IMAGE UPLOAD
+    // =========================================
+    if (profileImageInput && profileAvatar) {
+        profileImageInput.addEventListener("change", (event) => {
+            const file =
+                event.target.files[0];
+            if (!file) return;
+            const reader =
+                new FileReader();
+            reader.onload = function(e) {
+                const imageUrl =
+                    e.target.result;
+                profileAvatar.style.backgroundImage =
+                    `url(${imageUrl})`;
+                profileAvatar.textContent = "";
+                localStorage.setItem(
+                    "sidebarProfileImage",
+                    imageUrl
+                );
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+});
