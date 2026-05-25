@@ -121,6 +121,7 @@ auth.onAuthStateChanged((user) => {
     const userPhoto    = document.getElementById("user-photo");
     const userName     = document.getElementById("user-name");
     const userEmail    = document.getElementById("user-email");
+    const logoutBtn    = document.getElementById("logout-btn");
 
     if (user) {
         // Show main website
@@ -133,6 +134,9 @@ auth.onAuthStateChanged((user) => {
         if (userName)    userName.textContent = user.displayName || user.email || "User";
         if (userEmail)   userEmail.textContent = user.email || "";
 
+        // Show logout button
+        if (logoutBtn) logoutBtn.style.display = "inline-block";
+
         // Signal to script.js that auth succeeded — starts flute music
         window.dispatchEvent(new CustomEvent("spiritual-auth-success"));
 
@@ -141,11 +145,44 @@ auth.onAuthStateChanged((user) => {
         if (loginScreen) loginScreen.style.display = "flex";
         if (mainContent)  mainContent.classList.add("auth-hidden");
         if (userProfile) userProfile.style.display = "none";
+        if (logoutBtn) logoutBtn.style.display = "none";
         clearSafeUserProfile();
     }
 });
 
-// ── Logout ───────────────────────────────────────────────────
+// ── Logout Handler ───────────────────────────────────────────
+async function handleLogout() {
+    const logoutBtn = document.getElementById("logout-btn");
+
+    // Prevent double-clicks while signing out
+    if (logoutBtn) logoutBtn.disabled = true;
+
+    try {
+        // 1. Clear cached user profile before sign-out
+        clearSafeUserProfile();
+
+        // 2. Sign out via Firebase Auth
+        await auth.signOut();
+
+        // 3. Immediately update UI (redundant with onAuthStateChanged
+        //    but guarantees instant feedback even if the listener lags)
+        const loginScreen = document.getElementById("login-screen");
+        const mainContent = document.getElementById("main-content");
+        const userProfile = document.getElementById("user-profile");
+
+        if (mainContent)  mainContent.classList.add("auth-hidden");
+        if (loginScreen)  loginScreen.style.display = "flex";
+        if (userProfile)  userProfile.style.display = "none";
+        if (logoutBtn)    logoutBtn.style.display = "none";
+
+    } catch (error) {
+        console.error("Logout error:", error);
+        // Re-enable button so user can retry
+        if (logoutBtn) logoutBtn.disabled = false;
+    }
+}
+
+// ── DOM-Ready: wire up all auth buttons ──────────────────────
 document.addEventListener("DOMContentLoaded", () => {
     const googleBtn   = document.getElementById("google-login-btn");
     const facebookBtn = document.getElementById("facebook-login-btn");
@@ -153,14 +190,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (googleBtn)   googleBtn.addEventListener("click", handleGoogleLogin);
     if (facebookBtn) facebookBtn.addEventListener("click", handleFacebookLogin);
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", async () => {
-            try {
-                await auth.signOut();
-            } catch (error) {
-                console.error("Logout error:", error);
-            }
-        });
-    }
+    if (logoutBtn)   logoutBtn.addEventListener("click", handleLogout);
 });
