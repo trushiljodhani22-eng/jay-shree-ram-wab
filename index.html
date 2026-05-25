@@ -7,11 +7,213 @@
     <title>Spiritual AI Guide</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&family=Noto+Sans+Devanagari&family=Noto+Sans+Gurmukhi&family=Noto+Sans+Kannada&family=Noto+Sans+Malayalam&family=Noto+Sans+Oriya&family=Noto+Sans+Tamil&family=Noto+Sans+Telugu&family=Noto+Sans+Arabic&family=Noto+Sans+Ol+Chiki&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&family=Noto+Sans+Devanagari&family=Noto+Sans+Gurmukhi&family=Noto+Sans+Kannada&family=Noto+Sans+Malayalam&family=Noto+Sans+Oriya&family=Noto+Sans+Tamil&family=Noto+Sans+Telugu&family=Noto+Sans+Arabic&family=Noto+Sans+Ol+Chiki&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Sidebar ─────────────────────────────────────── */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 52px;
+            background: #1e1e2f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            z-index: 900;
+            transition: width .25s ease;
+            overflow: hidden;
+            box-shadow: 2px 0 8px rgba(0,0,0,.25);
+        }
+        .sidebar:hover,
+        .sidebar.open {
+            width: 200px;
+        }
+
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            background: transparent;
+            color: #ccc;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .2s, color .2s;
+        }
+        .sidebar-btn:hover {
+            background: rgba(255,255,255,.08);
+            color: #fff;
+        }
+        .sidebar-btn .sidebar-icon {
+            min-width: 24px;
+            text-align: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .sidebar-btn .sidebar-label {
+            opacity: 0;
+            transition: opacity .2s ease;
+            overflow: hidden;
+        }
+        .sidebar:hover .sidebar-btn .sidebar-label,
+        .sidebar.open .sidebar-btn .sidebar-label {
+            opacity: 1;
+        }
+
+        /* History placeholder */
+        .sidebar-history {
+            flex: 1;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        /* User button at bottom */
+        .sidebar-user-area {
+            width: 100%;
+            position: relative;
+            margin-top: auto;
+            border-top: 1px solid rgba(255,255,255,.1);
+            padding-top: 6px;
+        }
+        #user-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 14px;
+            border: none;
+            background: transparent;
+            color: #ccc;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        #user-menu-btn:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+        #sidebar-user-initial {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ff6b00;
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .sidebar-user-label {
+            opacity: 0;
+            transition: opacity .2s ease;
+            font-size: 13px;
+            overflow: hidden;
+        }
+        .sidebar:hover .sidebar-user-label,
+        .sidebar.open .sidebar-user-label {
+            opacity: 1;
+        }
+
+        /* User menu panel */
+        #user-menu-panel {
+            display: none;
+            position: absolute;
+            bottom: 54px;
+            left: 8px;
+            width: 220px;
+            background: #2a2a3d;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,.4);
+            padding: 10px 0;
+            z-index: 950;
+        }
+        #user-menu-panel.visible { display: block; }
+
+        .user-menu-header {
+            padding: 8px 14px 10px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+        }
+        #sidebar-user-email {
+            font-size: 12px;
+            color: #999;
+            word-break: break-all;
+        }
+        #sidebar-user-name {
+            font-size: 13px;
+            color: #ddd;
+            margin-top: 2px;
+        }
+
+        .user-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            color: #ccc;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+        .user-menu-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+
+        .user-menu-lang {
+            padding: 6px 14px;
+        }
+        .user-menu-lang select {
+            width: 100%;
+            padding: 5px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,.15);
+            background: #1e1e2f;
+            color: #ccc;
+            font-size: 12px;
+        }
+
+        /* ── App Shell ───────────────────────────────────── */
+        #app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+        #app-shell .app-main {
+            flex: 1;
+            margin-left: 52px;
+            transition: margin-left .25s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar:hover ~ .app-main,
+        .sidebar.open ~ .app-main {
+            margin-left: 200px;
+        }
+
+        /* Devotional photo — outside header, above chat */
+        .devotional-photo {
+            display: flex;
+            justify-content: center;
+            padding: 12px 0 4px;
+        }
+        .devotional-photo img {
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        /* ── User profile (hidden wrapper used by auth.js) ── */
+        #user-profile { display: none; }
+    </style>
 </head>
 
 <body>
+    <!-- ── Login Screen (unchanged) ──────────────────── -->
     <div id="login-screen" class="login-screen">
         <div class="login-wrapper">
             <div class="login-logo-box">
@@ -32,68 +234,175 @@
             <p id="login-error" class="login-error"></p>
         </div>
     </div>
-    <div id="main-content" class="auth-hidden">
-        <header>
-            <div class="header-left">
-                <div class="logo-box">
-                    <img src="logo.png" alt="Logo" class="main-logo">
-                </div>
-            </div>
-            <div class="center-title">
-                <h2>JAY SHREE RAM</h2>
-            </div>
-            <div class="header-right">
-                <div class="header-right-column">
-                    <img src="hanuman_ram_sita_pranam.jpg" alt="Hanuman Ram Sita Pranam" class="header-img"
-                        data-i18n-alt="headerImageAlt">
-                    <select id="language-select" class="lang-dropdown" data-i18n-aria="selectLanguageAria"
-                        aria-label="Select language">
-                        <option value="en" selected>English</option>
-                        <option value="hi">हिन्दी (Hindi)</option>
-                        <option value="gu">ગુજરાતી (Gujarati)</option>
-                        <option value="mr">मराठी (Marathi)</option>
-                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-                        <option value="bn">বাংলা (Bengali)</option>
-                        <option value="ta">தமிழ் (Tamil)</option>
-                        <option value="te">తెలుగు (Telugu)</option>
-                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
-                        <option value="ml">മലയാളം (Malayalam)</option>
-                        <option value="or">ଓଡ଼ିଆ (Odia)</option>
-                        <option value="as">অসমীয়া (Assamese)</option>
-                        <option value="ur">اردو (Urdu)</option>
-                        <option value="sa">संस्कृतम् (Sanskrit)</option>
-                        <option value="gom">कोंकणी (Konkani)</option>
-                        <option value="ks">कॉशुर (Kashmiri)</option>
-                        <option value="mni">মৈতৈলোন্ (Manipuri)</option>
-                        <option value="ne">नेपाली (Nepali)</option>
-                        <option value="sd">سنڌي (Sindhi)</option>
-                        <option value="doi">डोगरी (Dogri)</option>
-                        <option value="mai">मैथिली (Maithili)</option>
-                        <option value="brx">बड़ो (Bodo)</option>
-                        <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ (Santali)</option>
-                    </select>
-                </div>
-            </div>
-        </header>
 
-        <main class="chat-container">
-            <div class="chat-box" id="chat-box">
-                <div class="message ai-message">
-                    <p id="welcome-msg" lang="en" dir="ltr" translate="no" data-i18n="welcome" data-i18n-vars="name"></p>
-                </div>
-            </div>
-            <div class="input-area">
-                <input type="text" id="user-input" data-i18n-placeholder="inputPlaceholder"
-                    placeholder="Type your question here...">
-                <div class="buttons-grid">
-                    <button id="mic-btn" class="action-btn" data-i18n="micModeOff">🎤 Mode: Off</button>
-                    <button id="speak-btn" class="action-btn" data-i18n="listen">🔊 Listen</button>
-                    <button id="send-story-btn" class="action-btn story-btn" data-i18n="storyBtn">Story 📜</button>
-                    <button id="send-suggestion-btn" class="action-btn suggestion-btn" data-i18n="suggestionBtn">Suggestion 💡</button>
-                </div>
-            </div>
-        </main>
+    <!-- ── Hidden user-profile node for auth.js ──────── -->
+    <div id="user-profile">
+        <img id="user-photo" src="" alt="">
+        <span id="user-name"></span>
+        <span id="user-email"></span>
     </div>
+
+    <!-- ── Main Content ─────────────────────────────── -->
+    <div id="main-content" class="auth-hidden">
+        <div id="app-shell">
+
+            <!-- Sidebar -->
+            <nav class="sidebar" id="sidebar">
+                <button class="sidebar-btn" id="sidebar-toggle" title="Open Slider">
+                    <span class="sidebar-icon">☰</span>
+                    <span class="sidebar-label">Open Slider</span>
+                </button>
+                <button class="sidebar-btn" id="new-chat-btn" title="New Chat">
+                    <span class="sidebar-icon">✏️</span>
+                    <span class="sidebar-label">New Chat</span>
+                </button>
+                <button class="sidebar-btn" id="search-chat-btn" title="Search Chats">
+                    <span class="sidebar-icon">🔍</span>
+                    <span class="sidebar-label">Search Chats</span>
+                </button>
+                <button class="sidebar-btn" id="books-btn" title="Books">
+                    <span class="sidebar-icon">📚</span>
+                    <span class="sidebar-label">Books</span>
+                </button>
+
+                <div class="sidebar-history" id="sidebar-history"></div>
+
+                <!-- User area at bottom -->
+                <div class="sidebar-user-area">
+                    <button id="user-menu-btn" title="User menu">
+                        <span id="sidebar-user-initial">?</span>
+                        <span class="sidebar-user-label">Account</span>
+                    </button>
+
+                    <div id="user-menu-panel">
+                        <div class="user-menu-header">
+                            <div id="sidebar-user-email"></div>
+                            <div id="sidebar-user-name"></div>
+                        </div>
+                        <button class="user-menu-item">⬆ Upgrade Plan</button>
+                        <button class="user-menu-item">👤 Profile Name</button>
+                        <div class="user-menu-lang">
+                            <label class="user-menu-item" style="padding:0;cursor:default;">🌐 Select Language</label>
+                            <select id="language-select" class="lang-dropdown" data-i18n-aria="selectLanguageAria"
+                                aria-label="Select language">
+                                <option value="en" selected>English</option>
+                                <option value="hi">हिन्दी (Hindi)</option>
+                                <option value="gu">ગુજરાતી (Gujarati)</option>
+                                <option value="mr">मराठी (Marathi)</option>
+                                <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                                <option value="bn">বাংলা (Bengali)</option>
+                                <option value="ta">தமிழ் (Tamil)</option>
+                                <option value="te">తెలుగు (Telugu)</option>
+                                <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                                <option value="ml">മലയാളം (Malayalam)</option>
+                                <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                                <option value="as">অসমীয়া (Assamese)</option>
+                                <option value="ur">اردو (Urdu)</option>
+                                <option value="sa">संस्कृतम् (Sanskrit)</option>
+                                <option value="gom">कोंकणी (Konkani)</option>
+                                <option value="ks">कॉशुर (Kashmiri)</option>
+                                <option value="mni">মৈতৈলোন্ (Manipuri)</option>
+                                <option value="ne">नेपाली (Nepali)</option>
+                                <option value="sd">سنڌي (Sindhi)</option>
+                                <option value="doi">डोगरी (Dogri)</option>
+                                <option value="mai">मैथिली (Maithili)</option>
+                                <option value="brx">बड़ो (Bodo)</option>
+                                <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ (Santali)</option>
+                            </select>
+                        </div>
+                        <button class="user-menu-item" id="logout-btn">🚪 Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main area -->
+            <div class="app-main">
+                <!-- Devotional photo (kept, outside header) -->
+                <div class="devotional-photo">
+                    <img src="hanuman_ram_sita_pranam.jpg" alt="Hanuman Ram Sita Pranam"
+                        data-i18n-alt="headerImageAlt">
+                </div>
+
+                <main class="chat-container">
+                    <div class="chat-box" id="chat-box">
+                        <div class="message ai-message">
+                            <p id="welcome-msg" lang="en" dir="ltr" translate="no" data-i18n="welcome"
+                                data-i18n-vars="name"></p>
+                        </div>
+                    </div>
+                    <div class="input-area">
+                        <input type="text" id="user-input" data-i18n-placeholder="inputPlaceholder"
+                            placeholder="Type your question here...">
+                        <div class="buttons-grid">
+                            <button id="mic-btn" class="action-btn" data-i18n="micModeOff">🎤 Mode: Off</button>
+                            <button id="speak-btn" class="action-btn" data-i18n="listen">🔊 Listen</button>
+                            <button id="send-story-btn" class="action-btn story-btn" data-i18n="storyBtn">Story 📜</button>
+                            <button id="send-suggestion-btn" class="action-btn suggestion-btn" data-i18n="suggestionBtn">Suggestion 💡</button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Badge Overlay ─────────────────────────────── -->
+    <div id="badge-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center;">
+        <div style="background:#2a2a3d;border-radius:14px;padding:24px 28px;max-width:340px;text-align:center;color:#fff;">
+            <div id="badge-popup-number" style="font-size:13px;color:#aaa;"></div>
+            <div id="badge-popup-title" style="font-size:20px;font-weight:700;margin:8px 0;"></div>
+            <div id="badge-popup-english" style="font-size:13px;color:#bbb;"></div>
+            <div id="badge-popup-meaning" style="font-size:14px;margin:10px 0;color:#ddd;"></div>
+            <div id="badge-popup-congrats" style="font-size:13px;color:#aaa;margin-bottom:14px;"></div>
+            <button id="badge-popup-ok" style="padding:8px 28px;border:none;border-radius:8px;background:#ff6b00;color:#fff;font-size:14px;cursor:pointer;">OK</button>
+        </div>
+    </div>
+
+    <!-- ── Sidebar toggle & user-menu logic ──────────── -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var sidebar = document.getElementById("sidebar");
+            var toggle = document.getElementById("sidebar-toggle");
+            var menuBtn = document.getElementById("user-menu-btn");
+            var menuPanel = document.getElementById("user-menu-panel");
+
+            if (toggle) {
+                toggle.addEventListener("click", function () {
+                    sidebar.classList.toggle("open");
+                });
+            }
+            if (menuBtn) {
+                menuBtn.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    menuPanel.classList.toggle("visible");
+                });
+            }
+            document.addEventListener("click", function () {
+                if (menuPanel) menuPanel.classList.remove("visible");
+            });
+            if (menuPanel) {
+                menuPanel.addEventListener("click", function (e) { e.stopPropagation(); });
+            }
+
+            /* Sync user info from auth.js hidden profile into sidebar */
+            var observer = new MutationObserver(function () {
+                var emailEl = document.getElementById("user-email");
+                var nameEl = document.getElementById("user-name");
+                var sidebarEmail = document.getElementById("sidebar-user-email");
+                var sidebarName = document.getElementById("sidebar-user-name");
+                var initial = document.getElementById("sidebar-user-initial");
+                var email = emailEl ? emailEl.textContent : "";
+                var name = nameEl ? nameEl.textContent : "";
+                if (sidebarEmail) sidebarEmail.textContent = email;
+                if (sidebarName) sidebarName.textContent = name;
+                if (initial) initial.textContent = (name || email || "?").charAt(0).toUpperCase();
+            });
+            var profileNode = document.getElementById("user-profile");
+            if (profileNode) {
+                observer.observe(profileNode, { childList: true, subtree: true, characterData: true });
+            }
+        });
+    </script>
+
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="auth.js"></script>
