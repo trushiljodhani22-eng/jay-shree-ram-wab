@@ -790,3 +790,447 @@ LOGIN SCREEN STYLES
         font-size: 0.9rem;
     }
 }
+/* =========================================
+   SPIRITUAL SIDEBAR UI
+========================================= */
+
+body {
+    background: linear-gradient(
+        135deg,
+        #f6a21a 0%,
+        #fff4df 45%,
+        #ffffff 100%
+    );
+    overflow-x: hidden;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 72px;
+    height: 100vh;
+    background: linear-gradient(
+        180deg,
+        #f7b23b 0%,
+        #fff2d8 100%
+    );
+    border-right: 1px solid rgba(255,255,255,0.5);
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: 9999;
+    padding-top: 14px;
+    box-shadow: 4px 0 25px rgba(0,0,0,0.08);
+}
+
+.sidebar:hover {
+    width: 260px;
+}
+
+/* ================= BUTTONS ================= */
+
+.sidebar-btn,
+.user-menu-btn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: 0.25s ease;
+    color: #5b3200;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 14px;
+}
+
+.sidebar-btn:hover,
+.user-menu-btn:hover {
+    background: rgba(255,255,255,0.45);
+}
+
+/* ================= ICONS ================= */
+
+.sidebar-icon {
+    min-width: 24px;
+    text-align: center;
+    font-size: 20px;
+}
+
+/* ================= LABELS ================= */
+
+.sidebar-label {
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.25s ease;
+}
+
+.sidebar:hover .sidebar-label {
+    opacity: 1;
+}
+
+/* ================= HISTORY ================= */
+
+.sidebar-history {
+    margin-top: 18px;
+    padding: 10px;
+}
+
+.history-item {
+    position: relative;
+    padding: 12px;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    transition: 0.25s ease;
+}
+
+.history-item:hover {
+    background: rgba(255,255,255,0.35);
+}
+
+.history-title {
+    color: #5c3200;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ================= 3 DOT BUTTON ================= */
+
+.history-menu-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: none;
+    font-size: 18px;
+    color: #5c3200;
+}
+
+.history-item:hover .history-menu-btn {
+    display: block;
+}
+
+/* ================= ACTION MENU ================= */
+
+.history-action-menu {
+    display: none;
+    position: absolute;
+    top: 38px;
+    right: 0;
+    min-width: 150px;
+    background: #dceeff;
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 999;
+}
+
+.history-action-menu button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.history-action-menu button:hover {
+    background: rgba(255,255,255,0.55);
+}
+
+/* ================= USER SECTION ================= */
+
+.sidebar-user {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    padding: 10px;
+}
+
+#sidebar-user-initial {
+    width: 40px;
+    height: 40px;
+    background: #fff8ee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #5b3200;
+    border: 2px solid rgba(255,255,255,0.6);
+}
+
+/* ================= USER POPUP ================= */
+
+.user-menu-panel {
+    display: none;
+    position: absolute;
+    bottom: 72px;
+    left: 10px;
+    width: 225px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 10px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+}
+
+.user-menu-panel button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.user-menu-panel button:hover {
+    background: #f3f3f3;
+}
+
+.sidebar-user-email {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 10px;
+    word-break: break-word;
+    padding: 8px;
+}
+
+/* ================= MAIN CONTENT SHIFT ================= */
+
+#main-content {
+    margin-left: 72px;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar:hover ~ #main-content {
+    margin-left: 260px;
+}
+
+/* ================= IMAGE CLEANUP ================= */
+
+.logo-box,
+.header-top,
+.top-brand,
+.brand-title,
+.main-title {
+    background: transparent !important;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 68px;
+    }
+
+    .sidebar:hover {
+        width: 220px;
+    }
+
+    .sidebar:hover ~ #main-content {
+        margin-left: 220px;
+    }
+
+    .history-action-menu {
+        right: -10px;
+    }
+}
+/* =========================================
+   FINAL SPIRITUAL SIDEBAR POLISH
+========================================= */
+
+/* Modern Sidebar Feel */
+
+.sidebar {
+    backdrop-filter: blur(14px);
+    border-right: 1px solid rgba(255,255,255,0.35);
+}
+
+/* Sidebar Hover Glow */
+
+.sidebar-btn:hover,
+.user-menu-btn:hover {
+    background: rgba(255,255,255,0.55);
+    transform: translateX(3px);
+}
+
+/* Active Feel */
+
+.sidebar-btn:active,
+.user-menu-btn:active {
+    transform: scale(0.97);
+}
+
+/* Better Icons */
+
+.sidebar-icon {
+    font-size: 21px;
+    color: #8b3d00;
+}
+
+/* Sidebar Labels */
+
+.sidebar-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+/* User Initial Circle */
+
+#sidebar-user-initial {
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.08),
+        inset 0 1px 3px rgba(255,255,255,0.7);
+}
+
+/* User Menu Panel */
+
+.user-menu-panel {
+    animation: fadeUserMenu 0.18s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+@keyframes fadeUserMenu {
+
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+
+}
+
+/* User Menu Buttons */
+
+.user-menu-panel button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #4d2a00;
+    font-weight: 600;
+}
+
+/* History Item */
+
+.history-item {
+    overflow: visible;
+}
+
+/* History Menu */
+
+.history-action-menu {
+    animation: fadeHistoryMenu 0.18s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+@keyframes fadeHistoryMenu {
+
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+}
+
+/* Smooth Main Layout */
+
+#main-content {
+    min-height: 100vh;
+}
+
+/* Better Scrollbar Inside Sidebar */
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(139, 61, 0, 0.25);
+    border-radius: 10px;
+}
+
+/* Mobile Improvements */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+
+        width: 68px;
+        z-index: 99999;
+
+    }
+
+    .sidebar:hover {
+
+        width: 220px;
+
+    }
+
+    .sidebar:hover ~ #main-content {
+
+        margin-left: 220px;
+
+    }
+
+    .sidebar-btn,
+    .user-menu-btn {
+
+        padding: 13px 16px;
+
+    }
+
+    .sidebar-label {
+
+        font-size: 13px;
+
+    }
+
+}
+
+/* Ultra Small Devices */
+
+@media (max-width: 480px) {
+
+    .sidebar {
+
+        width: 64px;
+
+    }
+
+    .sidebar:hover {
+
+        width: 210px;
+
+    }
+
+    .sidebar:hover ~ #main-content {
+
+        margin-left: 210px;
+
+    }
+
+}

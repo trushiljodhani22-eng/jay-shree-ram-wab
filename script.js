@@ -905,3 +905,273 @@ window.addEventListener("spiritual-auth-success", () => {
     addInteractionListeners();
 });
 // ============================================================
+// =========================================
+// SIDEBAR INTERACTION LOGIC
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    // =========================
+    // ELEMENTS
+    // =========================
+
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebar-toggle");
+
+    const historyMenuButtons = document.querySelectorAll(".history-menu-btn");
+
+    const userMenuBtn = document.getElementById("user-menu-btn");
+    const userMenuPanel = document.getElementById("user-menu-panel");
+
+    const newChatBtn = document.getElementById("new-chat-btn");
+    const searchChatBtn = document.getElementById("search-chat-btn");
+    const booksBtn = document.getElementById("books-btn");
+
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+
+    // =========================================
+    // SIDEBAR TOGGLE
+    // =========================================
+
+    if (sidebarToggle && sidebar) {
+
+        sidebarToggle.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+            sidebar.classList.toggle("sidebar-open");
+
+        });
+
+    }
+
+    // =========================================
+    // HISTORY MENU
+    // =========================================
+
+    function closeAllHistoryMenus() {
+
+        document.querySelectorAll(".history-action-menu").forEach(menu => {
+
+            menu.style.display = "none";
+
+        });
+
+    }
+
+    historyMenuButtons.forEach(button => {
+
+        button.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+            const currentMenu =
+                button.parentElement.querySelector(".history-action-menu");
+
+            const isOpen =
+                currentMenu.style.display === "block";
+
+            closeAllHistoryMenus();
+
+            currentMenu.style.display =
+                isOpen ? "none" : "block";
+
+        });
+
+    });
+
+    // =========================================
+    // USER MENU
+    // =========================================
+
+    if (userMenuBtn && userMenuPanel) {
+
+        userMenuBtn.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+            const isVisible =
+                userMenuPanel.style.display === "block";
+
+            userMenuPanel.style.display =
+                isVisible ? "none" : "block";
+
+        });
+
+    }
+
+    // =========================================
+    // CLOSE MENUS WHEN CLICKING OUTSIDE
+    // =========================================
+
+    document.addEventListener("click", () => {
+
+        closeAllHistoryMenus();
+
+        if (userMenuPanel) {
+
+            userMenuPanel.style.display = "none";
+
+        }
+
+    });
+
+    // =========================================
+    // PREVENT MENU CLOSE ON INSIDE CLICK
+    // =========================================
+
+    document.querySelectorAll(".history-action-menu").forEach(menu => {
+
+        menu.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+        });
+
+    });
+
+    if (userMenuPanel) {
+
+        userMenuPanel.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+        });
+
+    }
+
+    // =========================================
+    // NEW CHAT BUTTON
+    // =========================================
+
+    if (newChatBtn && chatBox) {
+
+        newChatBtn.addEventListener("click", () => {
+
+            chatBox.innerHTML = "";
+
+            console.log("New chat started");
+
+        });
+
+    }
+
+    // =========================================
+    // SEARCH CHATS BUTTON
+    // =========================================
+
+    if (searchChatBtn && userInput) {
+
+        searchChatBtn.addEventListener("click", () => {
+
+            userInput.focus();
+
+        });
+
+    }
+
+    // =========================================
+    // BOOKS BUTTON
+    // =========================================
+
+    if (booksBtn) {
+
+        booksBtn.addEventListener("click", () => {
+
+            console.log("Books clicked");
+
+        });
+
+    }
+
+});
+// =========================================
+// USER MENU DROPDOWN LOGIC
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const userMenuBtn =
+        document.getElementById("user-menu-btn");
+
+    const userMenuPanel =
+        document.getElementById("user-menu-panel");
+
+    // =========================================
+    // TOGGLE USER MENU
+    // =========================================
+
+    if (userMenuBtn && userMenuPanel) {
+
+        userMenuBtn.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+            const isVisible =
+                userMenuPanel.style.display === "block";
+
+            userMenuPanel.style.display =
+                isVisible ? "none" : "block";
+
+        });
+
+    }
+
+    // =========================================
+    // CLOSE WHEN CLICKING OUTSIDE
+    // =========================================
+
+    document.addEventListener("click", () => {
+
+        if (userMenuPanel) {
+
+            userMenuPanel.style.display = "none";
+
+        }
+
+    });
+
+    // =========================================
+    // PREVENT CLOSE ON INSIDE CLICK
+    // =========================================
+
+    if (userMenuPanel) {
+
+        userMenuPanel.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+        });
+
+    }
+
+});
+// =========================================
+// FINAL SAFETY CHECK HELPER
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    const requiredIds = [
+        "sidebar",
+        "sidebar-toggle",
+        "user-menu-btn",
+        "user-menu-panel",
+        "logout-btn",
+        "language-select",
+        "main-content",
+        "login-screen",
+        "chat-box",
+        "user-input"
+    ];
+
+    requiredIds.forEach((id) => {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            console.warn(`Missing required element: #${id}`);
+        }
+    });
+
+    console.log("Final safety check completed.");
+});

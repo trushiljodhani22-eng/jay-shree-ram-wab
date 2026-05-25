@@ -164,3 +164,47 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+// =========================================
+// SIDEBAR USER DATA AFTER LOGIN
+// =========================================
+
+function updateSidebarUserProfile(user) {
+    if (!user) return;
+
+    const sidebarUserInitial = document.getElementById("sidebar-user-initial");
+    const sidebarUserName = document.getElementById("sidebar-user-name");
+    const sidebarUserEmail = document.getElementById("sidebar-user-email");
+
+    const email = user.email || "";
+    const displayName = user.displayName || "";
+
+    let cleanName = displayName;
+
+    if (!cleanName && email) {
+        cleanName = email.replace(".com", "");
+    }
+
+    const firstLetterSource = displayName || email || "U";
+    const firstLetter = firstLetterSource.charAt(0).toUpperCase();
+
+    if (sidebarUserInitial) {
+        sidebarUserInitial.textContent = firstLetter;
+    }
+
+    if (sidebarUserName) {
+        sidebarUserName.textContent = cleanName || "User";
+    }
+
+    if (sidebarUserEmail) {
+        sidebarUserEmail.textContent = email || "No email found";
+    }
+}
+
+// Patch existing Firebase auth state listener safely
+if (typeof auth !== "undefined") {
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            updateSidebarUserProfile(user);
+        }
+    });
+}
