@@ -20,24 +20,16 @@
 }
 
 body {
-    background-color: #fff9e6;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff4df 50%, #ffffff 100%) !important;
+    height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
 }
 
+/* HIDE OLD HEADER - Modern ChatGPT Style */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #cc5500;
-    color: white;
-    padding: 10px 20px;
-    height: 130px;
-    position: relative;
-    z-index: 10;
-    flex-shrink: 0;
+    display: none !important;
 }
 
 .logo-box {
@@ -72,24 +64,35 @@ header {
     object-fit: cover;
 }
 
+/* MODERN CHAT CONTAINER - Glassmorphism */
 .chat-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    background: white;
-    overflow: hidden;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    background: transparent !important;
+    overflow: hidden !important;
+    height: 100vh !important;
 }
 
+/* MODERN CHAT BOX - Centered & Glassmorphism */
 .chat-box {
-    flex: 1;
-    overflow-y: scroll !important;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 30px 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    max-width: 900px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(25px) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 32px rgba(247, 178, 59, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Krishna bansuri – vertical flute scrollbar (main content area) */
@@ -169,52 +172,91 @@ header {
     width: 0;
 }
 
+/* MODERN MESSAGES - Glassmorphism */
 .message {
-    padding: 12px 18px;
-    border-radius: 15px;
-    max-width: 80%;
-    font-size: 1.05rem;
+    padding: 16px 22px !important;
+    border-radius: 20px !important;
+    max-width: 75% !important;
+    font-size: 1rem !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
 }
 
 .ai-message {
-    background: #ffe4b5;
-    align-self: flex-start;
+    background: linear-gradient(135deg, rgba(255, 235, 190, 0.95), rgba(255, 210, 160, 0.9)) !important;
+    align-self: flex-start !important;
+    border: 1px solid rgba(255, 200, 150, 0.4) !important;
+    box-shadow: 0 4px 15px rgba(247, 178, 59, 0.15) !important;
 }
 
 .user-message {
-    background: #e0f7fa;
-    align-self: flex-end;
+    background: linear-gradient(135deg, rgba(230, 250, 255, 0.95), rgba(185, 240, 250, 0.9)) !important;
+    align-self: flex-end !important;
+    border: 1px solid rgba(178, 235, 242, 0.4) !important;
+    box-shadow: 0 4px 15px rgba(0, 150, 200, 0.12) !important;
 }
 
+/* MODERN INPUT AREA - Fixed Bottom */
 .input-area {
-    padding: 15px;
-    background: #fdfdfd;
-    border-top: 2px solid #eee;
-    flex-shrink: 0;
+    padding: 20px !important;
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(25px) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.7) !important;
+    flex-shrink: 0 !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 72px !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    box-shadow: 0 -8px 30px rgba(247, 178, 59, 0.15) !important;
+    max-width: calc(100% - 72px) !important;
+    margin: 0 auto !important;
 }
 
 #user-input {
-    width: 100%;
-    padding: 16px;
-    border: 2px solid #cc5500;
-    border-radius: 10px;
-    outline: none;
+    width: 100% !important;
+    padding: 16px 24px !important;
+    border: 2px solid rgba(204, 85, 0, 0.25) !important;
+    border-radius: 30px !important;
+    outline: none !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(15px) !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+#user-input:focus {
+    border-color: #cc5500 !important;
+    box-shadow: 0 0 0 4px rgba(204, 85, 0, 0.15), inset 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
 .buttons-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: 12px !important;
+    max-width: 900px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 .action-btn {
-    flex: 1 1 45%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
+    flex: 1 1 45% !important;
+    padding: 12px 16px !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
+    cursor: pointer !important;
+    background: linear-gradient(135deg, #f7b23b 0%, #e8a030 100%) !important;
+    color: white !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(247, 178, 59, 0.3) !important;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(247, 178, 59, 0.4) !important;
 }
 
 /* Krishna bansuri – vertical flute scrollbar (appended) */
@@ -806,72 +848,83 @@ body {
 
 /* ================= SIDEBAR ================= */
 
+/* MODERN SIDEBAR - ChatGPT Style */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 72px;
-    height: 100vh;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 72px !important;
+    height: 100vh !important;
     background: linear-gradient(
         180deg,
         #f7b23b 0%,
+        #ffe8a8 50%,
         #fff2d8 100%
-    );
-    border-right: 1px solid rgba(255,255,255,0.5);
-    transition: width 0.3s ease;
-    overflow-x: hidden;
-    overflow-y: auto;
-    z-index: 9999;
-    padding-top: 14px;
-    box-shadow: 4px 0 25px rgba(0,0,0,0.08);
+    ) !important;
+    border-right: 1px solid rgba(255,255,255,0.6) !important;
+    transition: width 0.3s ease, box-shadow 0.3s ease !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    z-index: 9999 !important;
+    padding-top: 14px !important;
+    box-shadow: 4px 0 25px rgba(247, 178, 59, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
 }
 
 .sidebar:hover {
-    width: 260px;
+    width: 250px !important;
+    box-shadow: 8px 0 35px rgba(0,0,0,0.12) !important;
 }
 
 /* ================= BUTTONS ================= */
 
+/* MODERN SIDEBAR BUTTONS - Icon Always Visible */
 .sidebar-btn,
 .user-menu-btn {
-    width: 100%;
-    border: none;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 14px 18px;
-    cursor: pointer;
-    transition: 0.25s ease;
-    color: #5b3200;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 14px;
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    padding: 14px 18px !important;
+    cursor: pointer !important;
+    transition: 0.25s ease !important;
+    color: #5b3200 !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    border-radius: 14px !important;
 }
 
 .sidebar-btn:hover,
 .user-menu-btn:hover {
-    background: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.55) !important;
+    transform: translateX(3px) !important;
 }
 
 /* ================= ICONS ================= */
 
 .sidebar-icon {
-    min-width: 24px;
-    text-align: center;
-    font-size: 20px;
+    min-width: 24px !important;
+    text-align: center !important;
+    font-size: 20px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
 }
 
 /* ================= LABELS ================= */
 
 .sidebar-label {
-    opacity: 0;
-    white-space: nowrap;
-    transition: opacity 0.25s ease;
+    opacity: 0 !important;
+    white-space: nowrap !important;
+    transition: opacity 0.25s ease !important;
+    visibility: hidden !important;
 }
 
 .sidebar:hover .sidebar-label {
-    opacity: 1;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 /* ================= HISTORY ================= */
@@ -1011,12 +1064,20 @@ body {
 /* ================= MAIN CONTENT SHIFT ================= */
 
 #main-content {
-    margin-left: 72px;
-    transition: margin-left 0.3s ease;
+    margin-left: 72px !important;
+    transition: margin-left 0.3s ease !important;
+    width: calc(100% - 72px) !important;
 }
 
 .sidebar:hover ~ #main-content {
-    margin-left: 260px;
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+}
+
+/* INPUT AREA SHIFT ON SIDEBAR HOVER */
+.sidebar:hover ~ #main-content .input-area {
+    left: 250px !important;
+    max-width: calc(100% - 250px) !important;
 }
 
 /* ================= IMAGE CLEANUP ================= */
@@ -1032,17 +1093,56 @@ body {
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
-
+    /* MOBILE SIDEBAR */
     .sidebar {
-        width: 68px;
+        width: 68px !important;
     }
 
     .sidebar:hover {
-        width: 220px;
+        width: 220px !important;
+    }
+
+    /* MOBILE MAIN CONTENT */
+    #main-content {
+        margin-left: 68px !important;
+        width: calc(100% - 68px) !important;
     }
 
     .sidebar:hover ~ #main-content {
-        margin-left: 220px;
+        margin-left: 220px !important;
+        width: calc(100% - 220px) !important;
+    }
+
+    /* MOBILE INPUT AREA */
+    .input-area {
+        left: 68px !important;
+        max-width: calc(100% - 68px) !important;
+        padding: 15px !important;
+    }
+
+    .sidebar:hover ~ #main-content .input-area {
+        left: 220px !important;
+        max-width: calc(100% - 220px) !important;
+    }
+
+    /* MOBILE CHAT BOX */
+    .chat-box {
+        padding: 20px 15px !important;
+        max-width: 100% !important;
+        border-radius: 15px !important;
+    }
+
+    /* MOBILE MESSAGES */
+    .message {
+        padding: 12px 16px !important;
+        max-width: 85% !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* MOBILE BUTTONS */
+    .action-btn {
+        padding: 10px 12px !important;
+        font-size: 0.9rem !important;
     }
 
     .history-action-menu {
@@ -1214,23 +1314,184 @@ body {
 /* Ultra Small Devices */
 
 @media (max-width: 480px) {
-
+    /* SMALL MOBILE SIDEBAR */
     .sidebar {
-
-        width: 64px;
-
+        width: 60px !important;
     }
 
     .sidebar:hover {
+        width: 200px !important;
+    }
 
-        width: 210px;
-
+    /* SMALL MOBILE MAIN CONTENT */
+    #main-content {
+        margin-left: 60px !important;
+        width: calc(100% - 60px) !important;
     }
 
     .sidebar:hover ~ #main-content {
-
-        margin-left: 210px;
-
+        margin-left: 200px !important;
+        width: calc(100% - 200px) !important;
     }
 
+    /* SMALL MOBILE INPUT AREA */
+    .input-area {
+        left: 60px !important;
+        max-width: calc(100% - 60px) !important;
+        padding: 12px !important;
+    }
+
+    .sidebar:hover ~ #main-content .input-area {
+        left: 200px !important;
+        max-width: calc(100% - 200px) !important;
+    }
+
+    /* SMALL MOBILE CHAT BOX */
+    .chat-box {
+        padding: 15px 12px !important;
+        border-radius: 12px !important;
+    }
+
+    /* SMALL MOBILE MESSAGES */
+    .message {
+        padding: 10px 14px !important;
+        max-width: 90% !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* SMALL MOBILE INPUT */
+    #user-input {
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+    }
+
+    /* SMALL MOBILE BUTTONS */
+    .action-btn {
+        padding: 8px 10px !important;
+        font-size: 0.85rem !important;
+    }
+}
+/* =========================================
+   SIDEBAR LINES + HISTORY FIX
+========================================= */
+
+
+/* Remove 3-dot button */
+
+.history-menu-btn {
+    display: none !important;
+}
+
+/* Hide history when sidebar closed */
+
+.sidebar-history {
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+}
+
+.sidebar:hover .sidebar-history,
+.sidebar.sidebar-open .sidebar-history {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Better chat area */
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.chat-box {
+    flex: 1;
+    background: rgba(255,255,255,0.55);
+    border-radius: 18px;
+    margin: 12px;
+    padding: 18px;
+    backdrop-filter: blur(8px);
+}sidebar
+/* =========================================
+   HISTORY SHOW ONLY WHEN SIDEBAR OPEN
+========================================= */
+
+.sidebar-history {
+    opacity: 0;
+    pointer-events: none;
+    max-height: 0;
+    overflow: hidden;
+    transition:
+        opacity 0.25s ease,
+        max-height 0.25s ease;
+}
+
+/* SHOW HISTORY WHEN SIDEBAR OPENS */
+
+.sidebar:hover .sidebar-history,
+.sidebar.sidebar-open .sidebar-history {
+    opacity: 1;
+    pointer-events: auto;
+    max-height: 500px;
+}
+
+/* REMOVE 3 DOT BUTTON */
+
+.history-menu-btn {
+    display: none !important;
+}
+
+/* HORIZONTAL TOP LINE */
+
+
+
+/* BETTER CHAT AREA */
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.chat-box {
+    flex: 1;
+    background: rgba(255,255,255,0.55);
+    border-radius: 18px;
+    margin: 12px;
+    padding: 18px;
+    backdrop-filter: blur(8px);
+}
+.sidebar {
+position: relative;
+}
+
+/* =========================
+VERTICAL LINE
+========================= */
+
+.sidebar::before {
+content: "";
+position: absolute;
+top: 18px;
+left: 0;
+width: 1px;
+height: calc(100% - 36px);
+background: rgba(255,255,255,0.45);
+z-index: 1;
+}
+
+/* =========================
+HORIZONTAL LINE
+========================= */
+
+.sidebar::after {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 42px;
+height: 2px;
+background: rgba(255,255,255,0.75);
+border-radius: 10px;
+z-index: 2;
 }
