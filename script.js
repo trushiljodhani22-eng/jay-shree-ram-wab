@@ -2215,3 +2215,34 @@ window.addEventListener("load", function () {
         console.log("Chat history system loaded.");
     });
 })();
+// =========================================
+// CLOSE HISTORY MENUS WHEN SIDEBAR CLOSES
+// =========================================
+
+(function () {
+    const sidebar = document.getElementById("sidebar");
+
+    function closeAllHistoryMenus() {
+        document.querySelectorAll(".history-action-menu").forEach((menu) => {
+            menu.classList.remove("history-menu-open");
+            menu.style.display = "";
+        });
+    }
+
+    if (!sidebar) return;
+
+    sidebar.addEventListener("mouseleave", () => {
+        closeAllHistoryMenus();
+    });
+
+    const observer = new MutationObserver(() => {
+        if (!sidebar.classList.contains("sidebar-open")) {
+            closeAllHistoryMenus();
+        }
+    });
+
+    observer.observe(sidebar, {
+        attributes: true,
+        attributeFilter: ["class"]
+    });
+})();
