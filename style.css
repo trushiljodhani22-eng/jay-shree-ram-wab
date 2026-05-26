@@ -2060,3 +2060,138 @@ z-index: 2;
     cursor: pointer !important;
 
 }
+
+/* =========================================
+   DYNAMIC CHAT HISTORY LIST STYLING
+========================================= */
+
+/* History section - show only when sidebar is open/hovered */
+#sidebar-history {
+    display: none !important;
+    margin-top: 16px;
+    padding: 8px 10px;
+}
+
+.sidebar:hover #sidebar-history,
+.sidebar.sidebar-open #sidebar-history {
+    display: block !important;
+}
+
+/* History heading - "Recently" in small bold text */
+.history-heading {
+    font-size: 11px;
+    font-weight: 800;
+    color: #5b3200;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    padding-left: 4px;
+}
+
+/* History item - clean and compact layout */
+.history-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
+    margin-bottom: 4px !important;
+    background: transparent !important;
+    transition: background 0.2s ease !important;
+    cursor: pointer !important;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Chat title on left */
+.history-title {
+    flex: 1 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #5c3200 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    padding-right: 8px !important;
+}
+
+/* Vertical 3-dot button on right */
+.history-menu-btn {
+    position: absolute !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    display: none !important;
+    font-size: 18px !important;
+    color: #5c3200 !important;
+    padding: 4px !important;
+    border-radius: 4px !important;
+    transition: background 0.2s ease !important;
+    z-index: 10 !important;
+}
+
+.history-item:hover .history-menu-btn {
+    display: block !important;
+}
+
+.history-menu-btn:hover {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Action menu - hidden by default */
+.history-action-menu {
+    display: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    min-width: 140px !important;
+    background: #dceeff !important;
+    border-radius: 12px !important;
+    padding: 6px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    z-index: 999999 !important;
+    margin-top: 4px !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Show menu when has .history-menu-open class */
+.history-action-menu.history-menu-open {
+    display: block !important;
+}
+
+/* Menu buttons - Share, Rename, Delete */
+.history-action-menu button {
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #15324a !important;
+    transition: background 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.history-action-menu button:hover {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Delete button specific styling */
+.history-action-menu button.delete-btn {
+    color: #b42318 !important;
+}
+
+.history-action-menu button.delete-btn:hover {
+    background: rgba(180, 35, 24, 0.1) !important;
+}

@@ -757,6 +757,211 @@ function checkAndAwardBadges(msgText) {
 // END BADGE SYSTEM SETUP
 // ============================================================
 
+// ============================================================
+// CHAT HISTORY SYSTEM — localStorage
+// ============================================================
+
+const CHAT_STORAGE_KEY = "spiritualChatHistory";
+let currentChatId = null;
+
+function getStoredChats() {
+    try {
+        const data = localStorage.getItem(CHAT_STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveStoredChats(chats) {
+    try {
+        localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
+    } catch (e) {
+        console.error("Failed to save chat history:", e);
+    }
+}
+
+function generateChatTitle(firstMessage) {
+    if (!firstMessage) return "New Chat";
+    const trimmed = firstMessage.trim().replace(/\s+/g, " ");
+    if (trimmed.length === 0) return "New Chat";
+    return trimmed.length > 35 ? trimmed.substring(0, 35) + "..." : trimmed;
+}
+
+function createNewChat() {
+    const chats = getStoredChats();
+    const newChat = {
+        id: Date.now().toString(),
+        title: "New Chat",
+        messages: [],
+        createdAt: new Date().toISOString()
+    };
+    chats.unshift(newChat);
+    saveStoredChats(chats);
+    currentChatId = newChat.id;
+    return newChat;
+}
+
+function saveChatMessage(text, isUser = true) {
+    if (!text || !text.trim()) return;
+    
+    const chats = getStoredChats();
+    let chat = chats.find(c => c.id === currentChatId);
+    
+    if (!chat) {
+        chat = createNewChat();
+    }
+    
+    chat.messages.push({
+        text: text.trim(),
+        isUser: isUser,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Update title from first user message
+    if (isUser && chat.messages.filter(m => m.isUser).length === 1) {
+        chat.title = generateChatTitle(text);
+    }
+    
+    // Move chat to top
+    const chatIndex = chats.findIndex(c => c.id === chat.id);
+    if (chatIndex > 0) {
+        chats.splice(chatIndex, 1);
+        chats.unshift(chat);
+    }
+    
+    saveStoredChats(chats);
+    renderChatHistory();
+}
+
+function renderChatHistory() {
+    const historyList = document.getElementById("history-list");
+    if (!historyList) return;
+    
+    const chats = getStoredChats();
+    historyList.innerHTML = "";
+    
+    chats.forEach(chat => {
+        const historyItem = document.createElement("div");
+        historyItem.className = "history-item";
+        historyItem.dataset.chatId = chat.id;
+        
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "history-title";
+        titleSpan.textContent = chat.title;
+        
+        const menuBtn = document.createElement("button");
+        menuBtn.className = "history-menu-btn";
+        menuBtn.innerHTML = "⋮";
+        menuBtn.setAttribute("aria-label", "Chat options");
+        
+        const actionMenu = document.createElement("div");
+        actionMenu.className = "history-action-menu";
+        actionMenu.style.display = "none";
+        
+        const shareBtn = document.createElement("button");
+        shareBtn.className = "history-action-btn";
+        shareBtn.textContent = "Share";
+        shareBtn.onclick = (e) => {
+            e.stopPropagation();
+            shareChat(chat.id);
+        };
+        
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "history-action-btn";
+        renameBtn.textContent = "Rename";
+        renameBtn.onclick = (e) => {
+            e.stopPropagation();
+            renameChat(chat.id);
+        };
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "history-action-btn delete-btn";
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            deleteChat(chat.id);
+        };
+        
+        actionMenu.appendChild(shareBtn);
+        actionMenu.appendChild(renameBtn);
+        actionMenu.appendChild(deleteBtn);
+        
+        historyItem.appendChild(titleSpan);
+        historyItem.appendChild(menuBtn);
+        historyItem.appendChild(actionMenu);
+        
+        historyList.appendChild(historyItem);
+    });
+}
+
+function deleteChat(chatId) {
+    const chats = getStoredChats();
+    const filteredChats = chats.filter(c => c.id !== chatId);
+    saveStoredChats(filteredChats);
+    
+    if (currentChatId === chatId) {
+        currentChatId = null;
+        // Clear chat box except welcome message
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+            const welcomeMsg = document.getElementById("welcome-msg");
+            chatBox.innerHTML = "";
+            if (welcomeMsg) {
+                const welcomeDiv = document.createElement("div");
+                welcomeDiv.className = "message ai-message";
+                welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
+                chatBox.appendChild(welcomeDiv);
+            }
+        }
+    }
+    
+    renderChatHistory();
+}
+
+function renameChat(chatId) {
+    const chats = getStoredChats();
+    const chat = chats.find(c => c.id === chatId);
+    if (!chat) return;
+    
+    const newTitle = prompt("Enter new title:", chat.title);
+    if (newTitle !== null && newTitle.trim()) {
+        chat.title = newTitle.trim();
+        saveStoredChats(chats);
+        renderChatHistory();
+    }
+}
+
+function shareChat(chatId) {
+    const chats = getStoredChats();
+    const chat = chats.find(c => c.id === chatId);
+    if (!chat) return;
+    
+    const chatText = chat.messages.map(m => `${m.isUser ? "You" : "AI"}: ${m.text}`).join("\n\n");
+    const shareContent = `${chat.title}\n\n${chatText}`;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareContent)
+            .then(() => alert("Chat copied to clipboard!"))
+            .catch(() => alert(shareContent));
+    } else {
+        alert(shareContent);
+    }
+}
+
+// Initialize chat history on page load
+function initializeChatHistory() {
+    // Start with a new empty chat (don't auto-load old chat)
+    currentChatId = null;
+    renderChatHistory();
+    
+    // Create a new chat when user sends first message
+}
+
+// ============================================================
+// END CHAT HISTORY SYSTEM
+// ============================================================
+
 function detectLanguage(text) {
     if (/[\u0a80-\u0aff]/.test(text)) return "gu";
     if (/[\u0900-\u097f]/.test(text)) return "hi";
@@ -798,6 +1003,9 @@ async function sendMessage() {
     userInput.value = "";
     questionCount++;
 
+    // Save user message to chat history
+    saveChatMessage(text, true);
+
     const inputLang = detectLanguage(text);
     const uiLang = I18n.getLanguage();
 
@@ -823,6 +1031,9 @@ async function sendMessage() {
         }
 
         appendMessage(response, "ai-message");
+
+        // Save AI response to chat history
+        saveChatMessage(response, false);
 
         // ✅ Badge system — count only 20+ character meaningful user messages
         checkAndAwardBadges(text);
@@ -911,14 +1122,15 @@ window.addEventListener("spiritual-auth-success", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    // Initialize chat history system
+    initializeChatHistory();
+
     // =========================
     // ELEMENTS
     // =========================
 
     const sidebar = document.getElementById("sidebar");
     const sidebarToggle = document.getElementById("sidebar-toggle");
-
-    const historyMenuButtons = document.querySelectorAll(".history-menu-btn");
 
     const userMenuBtn = document.getElementById("user-menu-btn");
     const userMenuPanel = document.getElementById("user-menu-panel");
@@ -960,25 +1172,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    historyMenuButtons.forEach(button => {
-
-        button.addEventListener("click", (e) => {
-
+    // Event delegation for dynamically created history menu buttons
+    document.addEventListener("click", (e) => {
+        if (e.target.classList.contains("history-menu-btn")) {
             e.stopPropagation();
-
-            const currentMenu =
-                button.parentElement.querySelector(".history-action-menu");
-
-            const isOpen =
-                currentMenu.style.display === "block";
-
+            const currentMenu = e.target.parentElement.querySelector(".history-action-menu");
+            const isOpen = currentMenu.style.display === "block";
             closeAllHistoryMenus();
-
-            currentMenu.style.display =
-                isOpen ? "none" : "block";
-
-        });
-
+            currentMenu.style.display = isOpen ? "none" : "block";
+        }
     });
 
     // =========================================
@@ -1005,8 +1207,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // CLOSE MENUS WHEN CLICKING OUTSIDE
     // =========================================
 
-    document.addEventListener("click", () => {
-
+    document.addEventListener("click", (e) => {
+        // Don't close if clicking on a history menu button
+        if (e.target.classList.contains("history-menu-btn")) return;
+        
         closeAllHistoryMenus();
 
         if (userMenuPanel) {
@@ -1021,14 +1225,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // PREVENT MENU CLOSE ON INSIDE CLICK
     // =========================================
 
-    document.querySelectorAll(".history-action-menu").forEach(menu => {
-
-        menu.addEventListener("click", (e) => {
-
+    // Event delegation for dynamically created history action menus
+    document.addEventListener("click", (e) => {
+        if (e.target.closest(".history-action-menu")) {
             e.stopPropagation();
-
-        });
-
+        }
     });
 
     if (userMenuPanel) {
@@ -1049,7 +1250,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         newChatBtn.addEventListener("click", () => {
 
+            // Start a new chat session
+            currentChatId = null;
+            
+            // Clear chat box except welcome message
+            const welcomeMsg = document.getElementById("welcome-msg");
             chatBox.innerHTML = "";
+            if (welcomeMsg) {
+                const welcomeDiv = document.createElement("div");
+                welcomeDiv.className = "message ai-message";
+                welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
+                chatBox.appendChild(welcomeDiv);
+            }
 
             console.log("New chat started");
 
