@@ -860,13 +860,7 @@ function createNewChat() {
         const newChat = {
             id: generateUniqueId(),
             title: "New Chat",
-            messages: [
-                {
-                    text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
-                    sender: "ai",
-                    timestamp: new Date().toISOString()
-                }
-            ],
+            messages: [],
             createdAt: new Date().toISOString()
         };
         chats.unshift(newChat);
@@ -884,6 +878,26 @@ function createNewChat() {
 
 function saveChatMessage(text, isUser = true) {
     try {
+        const clean = text.trim();
+
+        // Prevent saving loading placeholders and invalid messages
+        if (
+            clean.includes("ૐ...") ||
+            clean === "ૐ..." ||
+            clean.length < 2 ||
+            clean.includes("...") ||
+            clean.includes("Loading") ||
+            clean.includes("loading") ||
+            clean.includes("Thinking") ||
+            clean.includes("thinking") ||
+            clean.includes("Typing") ||
+            clean.includes("typing") ||
+            clean.includes("Generating") ||
+            clean.includes("generating")
+        ) {
+            return;
+        }
+
         // Validate message
         if (!isValidMessage(text)) {
             console.warn("Invalid message, not saving");
@@ -904,7 +918,8 @@ function saveChatMessage(text, isUser = true) {
 
         let chat = chats.find(c => c.id === currentChatId);
 
-        if (!chat) {
+        // Only create a new chat when user sends a message
+        if (!chat && isUser) {
             chat = createNewChat();
             if (!chat) {
                 console.error("Failed to create new chat");
@@ -914,6 +929,20 @@ function saveChatMessage(text, isUser = true) {
             const updatedChats = getStoredChats();
             chat = updatedChats.find(c => c.id === currentChatId);
             if (!chat) return;
+        }
+
+        // If no chat exists and this is an AI response, don't save
+        if (!chat) {
+            console.warn("No active chat, not saving message");
+            return;
+        }
+
+        // Prevent duplicate messages
+        const lastMessage = chat.messages[chat.messages.length - 1];
+        if (lastMessage && 
+            lastMessage.text === clean && 
+            lastMessage.sender === (isUser ? "user" : "ai")) {
+            return;
         }
 
         // Limit messages per chat
@@ -1169,6 +1198,11 @@ function shareChat(chatId) {
 // Initialize chat history on page load
 function initializeChatHistory() {
     try {
+        // Clean up old broken history systems
+        localStorage.removeItem("spiritual_chat_history");
+        localStorage.removeItem("spiritual_active_chat_id");
+        localStorage.removeItem("spiritual_chats_v1");
+
         // Restore current chat ID from localStorage if available
         const savedChatId = localStorage.getItem("currentChatId");
         if (savedChatId) {
@@ -1185,7 +1219,13 @@ function initializeChatHistory() {
         } else {
             currentChatId = null;
         }
-        
+
+        // Clear chat box on load
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+            chatBox.innerHTML = "";
+        }
+
         renderChatHistory();
     } catch (e) {
         console.error("Failed to initialize chat history:", e);
@@ -1267,20 +1307,7 @@ async function sendMessage() {
         }
 
         appendMessage(response, "ai-message");
-
-        // Save AI response to chat history
-        if (response && response.trim().length > 0) {
-            // Check for duplicate AI replies
-            const chats = getStoredChats();
-            const chat = chats.find(c => c.id === currentChatId);
-            const lastMessage = chat && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
-            const isDuplicate = lastMessage && lastMessage.sender === "ai" && lastMessage.text === response.trim();
-            
-            if (!isDuplicate) {
-                saveChatMessage(response, false);
-                console.log("AI answer saved to history");
-            }
-        }
+        saveChatMessage(response, false);
 
         // ✅ Badge system — count only 20+ character meaningful user messages
         checkAndAwardBadges(text);
@@ -1517,13 +1544,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         newChatBtn.addEventListener("click", () => {
 
-            // Create a new empty chat with welcome message
-            createNewChat();
-            
-            // Load the newly created chat to display messages
-            loadChat(currentChatId);
+            // Generate new chat ID
+            currentChatId = "chat_" + Date.now();
 
-            console.log("New chat started");
+            // Save to localStorage
+            localStorage.setItem("currentChatId", currentChatId);
+
+            // Clear chat box
+            chatBox.innerHTML = "";
+
+            // Show welcome message only
+            const welcomeDiv = document.createElement("div");
+            welcomeDiv.className = "message ai";
+            welcomeDiv.innerHTML = `
+                <div class="message-content">
+                    <p>Jay Shree Ram! Welcome Parth, how can I help you today?</p>
+                </div>
+            `;
+            chatBox.appendChild(welcomeDiv);
+
+            console.log("New chat started with ID:", currentChatId);
 
         });
 
@@ -1943,273 +1983,6 @@ window.addEventListener("load", function () {
 
 });
 // =========================================
-// FORCE LOCALSTORAGE CHAT HISTORY SYSTEM
-// =========================================
-
-(function () {
-    const STORAGE_KEY = "spiritual_chat_history";
-    const ACTIVE_KEY = "spiritual_active_chat_id";
-
-    function safeReadChats() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            const chats = raw ? JSON.parse(raw) : [];
-            return Array.isArray(chats) ? chats : [];
-        } catch (e) {
-            console.error("Chat history corrupted. Resetting.", e);
-            localStorage.removeItem(STORAGE_KEY);
-            return [];
-        }
-    }
-
-    function safeSaveChats(chats) {
-        try {
-            if (!Array.isArray(chats)) {
-                console.error("Invalid chats data: not an array");
-                return;
-            }
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(chats.slice(0, 50)));
-        } catch (e) {
-            console.error("Failed to save chat history:", e);
-        }
-    }
-
-    function makeId() {
-        return "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    }
-
-    function getActiveChatId() {
-        return localStorage.getItem(ACTIVE_KEY);
-    }
-
-    function setActiveChatId(id) {
-        localStorage.setItem(ACTIVE_KEY, id);
-    }
-
-    function createNewChat() {
-        const chat = {
-            id: makeId(),
-            title: "New Chat",
-            messages: [
-                {
-                    sender: "ai",
-                    text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
-                    time: Date.now()
-                }
-            ],
-            createdAt: Date.now()
-        };
-
-        const chats = safeReadChats();
-        chats.unshift(chat);
-        safeSaveChats(chats);
-        setActiveChatId(chat.id);
-        renderHistory();
-        openChat(chat.id);
-        return chat;
-    }
-
-    function getOrCreateActiveChat() {
-        const chats = safeReadChats();
-        let active = chats.find(c => c.id === getActiveChatId());
-
-        if (!active) {
-            return createNewChat();
-        }
-
-        return active;
-    }
-
-    function saveUserMessage(text) {
-        if (!text || text.trim().length < 2) return;
-
-        const chats = safeReadChats();
-        let activeId = getActiveChatId();
-        let chat = chats.find(c => c.id === activeId);
-
-        if (!chat) {
-            chat = {
-                id: makeId(),
-                title: "New Chat",
-                messages: [
-                    {
-                        sender: "ai",
-                        text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
-                        time: Date.now()
-                    }
-                ],
-                createdAt: Date.now()
-            };
-            chats.unshift(chat);
-            setActiveChatId(chat.id);
-        }
-
-        const cleanText = text.trim();
-
-        chat.messages.push({
-            sender: "user",
-            text: cleanText,
-            time: Date.now()
-        });
-
-        if (chat.title === "New Chat") {
-            chat.title = cleanText.slice(0, 35);
-        }
-
-        safeSaveChats(chats);
-        renderHistory();
-    }
-
-    function clearChatBox() {
-        const chatBox = document.getElementById("chat-box");
-        if (!chatBox) return;
-        chatBox.innerHTML = "";
-    }
-
-    function openChat(id) {
-        const chats = safeReadChats();
-        const chat = chats.find(c => c.id === id);
-        const chatBox = document.getElementById("chat-box");
-
-        if (!chat || !chatBox) return;
-
-        setActiveChatId(id);
-        chatBox.innerHTML = "";
-
-        chat.messages.forEach(msg => {
-            const div = document.createElement("div");
-            div.className = msg.sender === "user" ? "message user-message" : "message ai-message";
-            div.textContent = msg.text;
-            chatBox.appendChild(div);
-        });
-    }
-
-    function renderHistory() {
-        const list = document.getElementById("history-list");
-        if (!list) return;
-
-        const chats = safeReadChats();
-        list.innerHTML = "";
-
-        chats.forEach(chat => {
-            const item = document.createElement("div");
-            item.className = "history-item";
-
-            const title = document.createElement("span");
-            title.className = "history-title";
-            title.textContent = chat.title || "New Chat";
-
-            const menuBtn = document.createElement("button");
-            menuBtn.className = "history-menu-btn";
-            menuBtn.type = "button";
-            menuBtn.textContent = "⋮";
-
-            const menu = document.createElement("div");
-            menu.className = "history-action-menu";
-
-            const renameBtn = document.createElement("button");
-            renameBtn.textContent = "✏️ Rename";
-
-            const shareBtn = document.createElement("button");
-            shareBtn.textContent = "🔗 Share";
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.textContent = "🗑️ Delete";
-
-            menu.append(renameBtn, shareBtn, deleteBtn);
-            item.append(title, menuBtn, menu);
-            list.appendChild(item);
-
-            title.addEventListener("click", () => openChat(chat.id));
-
-            renameBtn.addEventListener("click", e => {
-                e.stopPropagation();
-                const newName = prompt("Enter new chat name:", chat.title);
-                if (!newName) return;
-
-                const all = safeReadChats();
-                const target = all.find(c => c.id === chat.id);
-                if (target) target.title = newName.trim().slice(0, 50);
-                safeSaveChats(all);
-                renderHistory();
-            });
-
-            shareBtn.addEventListener("click", e => {
-                e.stopPropagation();
-                const text = chat.messages.map(m => `${m.sender}: ${m.text}`).join("\n");
-
-                if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text || chat.title);
-                    alert("Chat copied.");
-                } else {
-                    alert(text || chat.title);
-                }
-            });
-
-            deleteBtn.addEventListener("click", e => {
-                e.stopPropagation();
-                const all = safeReadChats().filter(c => c.id !== chat.id);
-                safeSaveChats(all);
-
-                if (getActiveChatId() === chat.id) {
-                    localStorage.removeItem(ACTIVE_KEY);
-                    clearChatBox();
-                }
-
-                renderHistory();
-            });
-        });
-    }
-
-    function hookInput() {
-        const input = document.getElementById("user-input");
-        const sendBtn = document.getElementById("send-btn");
-        const newChatBtn = document.getElementById("new-chat-btn");
-
-        if (input && !input.dataset.historyHooked) {
-            input.dataset.historyHooked = "true";
-
-            input.addEventListener("keydown", e => {
-                if (e.key === "Enter") {
-                    saveUserMessage(input.value);
-                }
-            });
-        }
-
-        if (sendBtn && !sendBtn.dataset.historyHooked) {
-            sendBtn.dataset.historyHooked = "true";
-
-            sendBtn.addEventListener("click", () => {
-                if (input) saveUserMessage(input.value);
-            });
-        }
-
-        if (newChatBtn && !newChatBtn.dataset.historyHooked) {
-            newChatBtn.dataset.historyHooked = "true";
-
-            newChatBtn.addEventListener("click", () => {
-                createNewChat();
-            });
-        }
-    }
-
-    window.addEventListener("load", () => {
-        if (!document.getElementById("history-list")) {
-            console.error("#history-list missing. Add it inside #sidebar-history.");
-            return;
-        }
-
-        if (!getActiveChatId()) {
-            createNewChat();
-        }
-
-        renderHistory();
-        hookInput();
-
-        console.log("Chat history system loaded.");
-    });
-})();
-// =========================================
 // CLOSE HISTORY MENUS WHEN SIDEBAR CLOSES
 // =========================================
 
@@ -2241,100 +2014,218 @@ window.addEventListener("load", function () {
     });
 })();
 // =====================================================
-// FINAL PATCH: SAVE AI ANSWERS INTO VISIBLE HISTORY
+// FINAL STABLE CHAT HISTORY OVERRIDE
+// Fixes:
+// 1. Om/loading save issue
+// 2. New Chat separate session issue
+// 3. All chats saving in one chat issue
 // =====================================================
 
 (function () {
-    if (window.__aiVisibleHistoryPatchDone) return;
-    window.__aiVisibleHistoryPatchDone = true;
+    if (window.__stableHistoryOverrideLoaded) return;
+    window.__stableHistoryOverrideLoaded = true;
 
-    const VISIBLE_HISTORY_KEY = "spiritual_chat_history";
-    const ACTIVE_CHAT_KEY = "spiritual_active_chat_id";
+    const HISTORY_KEY = "spiritualChatHistory";
+    const ACTIVE_KEY = "currentChatId";
 
-    function readVisibleChats() {
+    function readChats() {
         try {
-            const raw = localStorage.getItem(VISIBLE_HISTORY_KEY);
-            const chats = raw ? JSON.parse(raw) : [];
-            return Array.isArray(chats) ? chats : [];
-        } catch (error) {
-            console.error("Visible history read failed:", error);
+            const data = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+            return Array.isArray(data) ? data : [];
+        } catch {
             return [];
         }
     }
 
-    function saveVisibleChats(chats) {
-        try {
-            localStorage.setItem(
-                VISIBLE_HISTORY_KEY,
-                JSON.stringify(chats.slice(0, 50))
-            );
-        } catch (error) {
-            console.error("Visible history save failed:", error);
-        }
+    function writeChats(chats) {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(chats.slice(0, 50)));
     }
 
-    function makeChatId() {
+    function makeId() {
         return "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2);
     }
 
-    function saveAIToVisibleHistory(aiText) {
-        const cleanText = String(aiText || "").trim();
+    function isBadMessage(text) {
+        const clean = String(text || "").trim();
 
-        if (!cleanText || cleanText.length < 2) return;
+        if (clean.length < 2) return true;
+        if (clean === "ૐ..." || clean.includes("ૐ...")) return true;
+        if (clean.toLowerCase().includes("typing")) return true;
+        if (clean.toLowerCase().includes("loading")) return true;
 
-        let chats = readVisibleChats();
-        let activeId = localStorage.getItem(ACTIVE_CHAT_KEY);
-        let chat = chats.find((c) => c.id === activeId);
+        return false;
+    }
+
+    function setActiveChat(id) {
+        localStorage.setItem(ACTIVE_KEY, id);
+    }
+
+    function getActiveChat() {
+        return localStorage.getItem(ACTIVE_KEY);
+    }
+
+    function createEmptySession() {
+        const newId = makeId();
+        setActiveChat(newId);
+
+        const chatBox = document.getElementById("chat-box");
+        if (chatBox) {
+            chatBox.innerHTML = `
+                <div class="message ai-message">
+                    Jay Shree Ram! Welcome Parth, how can I help you today?
+                </div>
+            `;
+        }
+
+        return newId;
+    }
+
+    window.saveChatMessage = function (text, isUser = true) {
+        const clean = String(text || "").trim();
+
+        if (isBadMessage(clean)) return;
+
+        let chats = readChats();
+        let activeId = getActiveChat();
+
+        let chat = chats.find(c => c.id === activeId);
 
         if (!chat) {
             chat = {
-                id: makeChatId(),
-                title: "New Chat",
-                messages: [
-                    {
-                        sender: "ai",
-                        text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
-                        time: Date.now()
-                    }
-                ],
+                id: activeId || makeId(),
+                title: isUser ? clean.slice(0, 35) : "New Chat",
+                messages: [],
                 createdAt: Date.now()
             };
 
+            setActiveChat(chat.id);
             chats.unshift(chat);
-            activeId = chat.id;
-            localStorage.setItem(ACTIVE_CHAT_KEY, activeId);
         }
 
-        const lastMessage = chat.messages[chat.messages.length - 1];
+        const sender = isUser ? "user" : "ai";
+        const last = chat.messages[chat.messages.length - 1];
 
-        if (
-            lastMessage &&
-            lastMessage.sender === "ai" &&
-            lastMessage.text === cleanText
-        ) {
-            return;
-        }
+        if (last && last.sender === sender && last.text === clean) return;
 
         chat.messages.push({
-            sender: "ai",
-            text: cleanText,
+            sender,
+            text: clean,
             time: Date.now()
         });
 
-        saveVisibleChats(chats);
+        if (isUser && (!chat.title || chat.title === "New Chat")) {
+            chat.title = clean.slice(0, 35);
+        }
 
-        console.log("AI answer saved into visible history");
+        writeChats(chats);
+        renderStableHistory();
+    };
+
+    function renderStableHistory() {
+        const list = document.getElementById("history-list");
+        if (!list) return;
+
+        list.innerHTML = "";
+
+        readChats().forEach(chat => {
+            const item = document.createElement("div");
+            item.className = "history-item";
+
+            const title = document.createElement("span");
+            title.className = "history-title";
+            title.textContent = chat.title || "New Chat";
+
+            item.appendChild(title);
+            list.appendChild(item);
+
+            item.addEventListener("click", () => {
+                setActiveChat(chat.id);
+
+                const chatBox = document.getElementById("chat-box");
+                if (!chatBox) return;
+
+                chatBox.innerHTML = "";
+
+                chat.messages.forEach(msg => {
+                    if (isBadMessage(msg.text)) return;
+
+                    const div = document.createElement("div");
+                    div.className =
+                        msg.sender === "user"
+                            ? "message user-message"
+                            : "message ai-message";
+
+                    div.textContent = msg.text;
+                    chatBox.appendChild(div);
+                });
+            });
+        });
     }
 
-    const oldSaveChatMessage = window.saveChatMessage || saveChatMessage;
+    function hookNewChat() {
+        const newChatBtn = document.getElementById("new-chat-btn");
 
-    window.saveChatMessage = function (text, isUser = true) {
-        if (typeof oldSaveChatMessage === "function") {
-            oldSaveChatMessage(text, isUser);
+        if (!newChatBtn) return;
+
+        newChatBtn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            createEmptySession();
+
+            console.log("New clean chat session started");
+        };
+    }
+
+    function observeChatBox() {
+        const chatBox = document.getElementById("chat-box");
+
+        if (!chatBox) return;
+        if (chatBox.dataset.stableObserverAttached) return;
+
+        chatBox.dataset.stableObserverAttached = "true";
+
+        const observer = new MutationObserver(() => {
+            const messages = chatBox.querySelectorAll(".message");
+
+            messages.forEach(msg => {
+                if (msg.dataset.historySaved === "true") return;
+
+                const text = msg.textContent.trim();
+
+                if (isBadMessage(text)) return;
+
+                msg.dataset.historySaved = "true";
+
+                if (msg.classList.contains("user-message")) {
+                    window.saveChatMessage(text, true);
+                }
+
+                if (msg.classList.contains("ai-message")) {
+                    window.saveChatMessage(text, false);
+                }
+            });
+        });
+
+        observer.observe(chatBox, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    window.addEventListener("load", () => {
+        localStorage.removeItem("spiritual_chat_history");
+        localStorage.removeItem("spiritual_active_chat_id");
+        localStorage.removeItem("spiritual_chats_v1");
+
+        renderStableHistory();
+        hookNewChat();
+        observeChatBox();
+
+        if (!getActiveChat()) {
+            createEmptySession();
         }
 
-        if (isUser === false) {
-            saveAIToVisibleHistory(text);
-        }
-    };
-})();
+        console.log("Stable history override active");
+    });
+})();   
