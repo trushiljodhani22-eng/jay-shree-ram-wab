@@ -875,10 +875,21 @@ function generateChatTitle(firstMessage) {
 function createNewChat() {
     try {
         const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Failed to get chats: invalid data");
+            return null;
+        }
+
         const newChat = {
             id: generateUniqueId(),
             title: "New Chat",
-            messages: [],
+            messages: [
+                {
+                    text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
+                    sender: "ai",
+                    timestamp: new Date().toISOString()
+                }
+            ],
             createdAt: new Date().toISOString()
         };
         chats.unshift(newChat);
@@ -886,6 +897,7 @@ function createNewChat() {
         currentChatId = newChat.id;
         // Persist current chat ID
         localStorage.setItem("currentChatId", currentChatId);
+        renderChatHistory();
         return newChat;
     } catch (e) {
         console.error("Failed to create new chat:", e);
@@ -900,15 +912,21 @@ function saveChatMessage(text, isUser = true) {
             console.warn("Invalid message, not saving");
             return;
         }
-        
+
+        // Don't save empty AI responses
+        if (!isUser && (!text || text.trim().length === 0)) {
+            console.warn("Empty AI response, not saving");
+            return;
+        }
+
         const chats = getStoredChats();
         if (!Array.isArray(chats)) {
             console.error("Failed to get chats: invalid data");
             return;
         }
-        
+
         let chat = chats.find(c => c.id === currentChatId);
-        
+
         if (!chat) {
             chat = createNewChat();
             if (!chat) {
@@ -920,31 +938,31 @@ function saveChatMessage(text, isUser = true) {
             chat = updatedChats.find(c => c.id === currentChatId);
             if (!chat) return;
         }
-        
+
         // Limit messages per chat
         if (chat.messages.length >= MAX_MESSAGES_PER_CHAT) {
             console.warn(`Chat has reached maximum ${MAX_MESSAGES_PER_CHAT} messages`);
             chat.messages.shift(); // Remove oldest message
         }
-        
+
         chat.messages.push({
             text: text.trim(),
-            isUser: isUser,
+            sender: isUser ? "user" : "ai",
             timestamp: new Date().toISOString()
         });
-        
+
         // Update title from first user message
-        if (isUser && chat.messages.filter(m => m.isUser).length === 1) {
+        if (isUser && chat.messages.filter(m => m.sender === "user").length === 1) {
             chat.title = generateChatTitle(text);
         }
-        
+
         // Move chat to top
         const chatIndex = chats.findIndex(c => c.id === chat.id);
         if (chatIndex > 0) {
             chats.splice(chatIndex, 1);
             chats.unshift(chat);
         }
-        
+
         saveStoredChats(chats);
         renderChatHistory();
     } catch (e) {
@@ -1059,23 +1077,11 @@ function loadChat(chatId) {
         }
         
         chatBox.innerHTML = "";
-        
-        // If chat has no messages, show welcome message
-        if (!chat.messages || chat.messages.length === 0) {
-            const welcomeMsg = document.getElementById("welcome-msg");
-            if (welcomeMsg) {
-                const welcomeDiv = document.createElement("div");
-                welcomeDiv.className = "message ai-message";
-                welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
-                chatBox.appendChild(welcomeDiv);
-            }
-            return;
-        }
-        
+
         // Render all messages from the chat
         chat.messages.forEach(msg => {
             if (!msg || !msg.text) return;
-            const className = msg.isUser ? "user-message" : "ai-message";
+            const className = msg.sender === "user" ? "user-message" : "ai-message";
             appendMessage(escapeHtml(msg.text), className);
         });
     } catch (e) {
@@ -1103,17 +1109,10 @@ function deleteChat(chatId) {
             currentChatId = null;
             // Clear persisted chat ID
             localStorage.removeItem("currentChatId");
-            // Clear chat box except welcome message
+            // Clear chat box
             const chatBox = document.getElementById("chat-box");
             if (chatBox) {
-                const welcomeMsg = document.getElementById("welcome-msg");
                 chatBox.innerHTML = "";
-                if (welcomeMsg) {
-                    const welcomeDiv = document.createElement("div");
-                    welcomeDiv.className = "message ai-message";
-                    welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
-                    chatBox.appendChild(welcomeDiv);
-                }
             }
         }
         
@@ -1174,7 +1173,7 @@ function shareChat(chatId) {
         
         const chatText = chat.messages.map(m => {
             if (!m || !m.text) return '';
-            return `${m.isUser ? "You" : "AI"}: ${escapeHtml(m.text)}`;
+            return `${m.sender === "user" ? "You" : "AI"}: ${escapeHtml(m.text)}`;
         }).filter(m => m).join("\n\n");
         const shareContent = `${escapeHtml(chat.title)}\n\n${chatText}`;
         
@@ -1519,18 +1518,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         newChatBtn.addEventListener("click", () => {
 
-            // Create a new empty chat
+            // Create a new empty chat with welcome message
             createNewChat();
             
-            // Clear chat box except welcome message
-            const welcomeMsg = document.getElementById("welcome-msg");
-            chatBox.innerHTML = "";
-            if (welcomeMsg) {
-                const welcomeDiv = document.createElement("div");
-                welcomeDiv.className = "message ai-message";
-                welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
-                chatBox.appendChild(welcomeDiv);
-            }
+            // Load the newly created chat to display messages
+            loadChat(currentChatId);
 
             console.log("New chat started");
 
@@ -1973,6 +1965,10 @@ window.addEventListener("load", function () {
 
     function safeSaveChats(chats) {
         try {
+            if (!Array.isArray(chats)) {
+                console.error("Invalid chats data: not an array");
+                return;
+            }
             localStorage.setItem(STORAGE_KEY, JSON.stringify(chats.slice(0, 50)));
         } catch (e) {
             console.error("Failed to save chat history:", e);
@@ -1995,7 +1991,13 @@ window.addEventListener("load", function () {
         const chat = {
             id: makeId(),
             title: "New Chat",
-            messages: [],
+            messages: [
+                {
+                    sender: "ai",
+                    text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
+                    time: Date.now()
+                }
+            ],
             createdAt: Date.now()
         };
 
@@ -2004,7 +2006,7 @@ window.addEventListener("load", function () {
         safeSaveChats(chats);
         setActiveChatId(chat.id);
         renderHistory();
-        clearChatBox();
+        openChat(chat.id);
         return chat;
     }
 
@@ -2030,7 +2032,13 @@ window.addEventListener("load", function () {
             chat = {
                 id: makeId(),
                 title: "New Chat",
-                messages: [],
+                messages: [
+                    {
+                        sender: "ai",
+                        text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
+                        time: Date.now()
+                    }
+                ],
                 createdAt: Date.now()
             };
             chats.unshift(chat);
@@ -2056,12 +2064,7 @@ window.addEventListener("load", function () {
     function clearChatBox() {
         const chatBox = document.getElementById("chat-box");
         if (!chatBox) return;
-
-        chatBox.innerHTML = `
-            <div class="message ai-message">
-                <p>Jay Shree Ram! Welcome Parth, how can I help you today?</p>
-            </div>
-        `;
+        chatBox.innerHTML = "";
     }
 
     function openChat(id) {
