@@ -1201,93 +1201,272 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Upgrade Plan feature will be added soon.");
         });
     }
-    if (profileBtn) {
-        profileBtn.addEventListener("click", () => {
-            alert("Profile feature will be added soon.");
-        });
-    }
 });
+
 // =========================================
-// PROFILE MODAL + IMAGE UPLOAD
+// FINAL USER MENU + PROFILE MODAL SYSTEM
 // =========================================
+
 document.addEventListener("DOMContentLoaded", () => {
+
+    // =====================================
+    // ELEMENTS
+    // =====================================
+
+    const userMenuBtn =
+        document.getElementById("user-menu-btn");
+
+    const userMenuPanel =
+        document.getElementById("user-menu-panel");
+
     const profileBtn =
         document.getElementById("profile-btn");
+
     const profileModal =
         document.getElementById("profile-modal");
-    const closeProfileModal =
-        document.getElementById("close-profile-modal");
+
+    const profileCloseBtn =
+        document.getElementById("profile-close-btn");
+
+    const profilePhotoInput =
+        document.getElementById("profile-photo-input");
+
     const profileAvatar =
         document.getElementById("profile-avatar");
-    const profileEmail =
-        document.getElementById("profile-email");
-    const profileImageInput =
-        document.getElementById("profile-image-input");
-    // =========================================
-    // OPEN PROFILE MODAL
-    // =========================================
+
+    const sidebarInitial =
+        document.getElementById("sidebar-user-initial");
+
+    // =====================================
+    // USER MENU OPEN
+    // =====================================
+
+    if (userMenuBtn && userMenuPanel) {
+
+        userMenuBtn.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+            userMenuPanel.classList.toggle(
+                "user-menu-open"
+            );
+
+        });
+
+    }
+
+    // =====================================
+    // PROFILE MODAL OPEN
+    // =====================================
+
     if (profileBtn && profileModal) {
-        profileBtn.addEventListener("click", () => {
-            profileModal.classList.add("profile-modal-open");
-            const savedEmail =
-                localStorage.getItem("sidebarUserEmail");
-            const savedInitial =
-                localStorage.getItem("sidebarUserInitial");
-            const savedProfileImage =
-                localStorage.getItem("sidebarProfileImage");
-            if (profileEmail && savedEmail) {
-                profileEmail.textContent = savedEmail;
+
+        profileBtn.addEventListener("click", (e) => {
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+            profileModal.classList.add(
+                "profile-open"
+            );
+
+            // close small dropdown
+
+            if (userMenuPanel) {
+
+                userMenuPanel.classList.remove(
+                    "user-menu-open"
+                );
+
             }
-            if (profileAvatar && savedInitial) {
-                profileAvatar.textContent = savedInitial;
-            }
-            if (profileAvatar && savedProfileImage) {
-                profileAvatar.style.backgroundImage =
-                    `url(${savedProfileImage})`;
-                profileAvatar.textContent = "";
-            }
+
         });
+
     }
-    // =========================================
+
+    // =====================================
     // CLOSE PROFILE MODAL
-    // =========================================
-    if (closeProfileModal && profileModal) {
-        closeProfileModal.addEventListener("click", () => {
-            profileModal.classList.remove("profile-modal-open");
+    // =====================================
+
+    if (profileCloseBtn && profileModal) {
+
+        profileCloseBtn.addEventListener("click", () => {
+
+            profileModal.classList.remove(
+                "profile-open"
+            );
+
         });
+
     }
-    // =========================================
-    // CLICK OUTSIDE TO CLOSE
-    // =========================================
+
+    // =====================================
+    // OUTSIDE CLICK CLOSE
+    // =====================================
+
+    document.addEventListener("click", () => {
+
+        if (userMenuPanel) {
+
+            userMenuPanel.classList.remove(
+                "user-menu-open"
+            );
+
+        }
+
+    });
+
+    // =====================================
+    // PREVENT INSIDE CLOSE
+    // =====================================
+
+    if (userMenuPanel) {
+
+        userMenuPanel.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+        });
+
+    }
+
     if (profileModal) {
-        profileModal.addEventListener("click", (event) => {
-            if (event.target === profileModal) {
-                profileModal.classList.remove("profile-modal-open");
+
+        profileModal.addEventListener("click", (e) => {
+
+            if (e.target === profileModal) {
+
+                profileModal.classList.remove(
+                    "profile-open"
+                );
+
             }
+
         });
+
     }
-    // =========================================
-    // IMAGE UPLOAD
-    // =========================================
-    if (profileImageInput && profileAvatar) {
-        profileImageInput.addEventListener("change", (event) => {
+
+    // =====================================
+    // PROFILE PHOTO SYSTEM
+    // =====================================
+
+    const savedPhoto =
+        localStorage.getItem("profilePhoto");
+
+    if (savedPhoto) {
+
+        if (profileAvatar) {
+
+            profileAvatar.innerHTML =
+                `<img src="${savedPhoto}" 
+                style="
+                width:100%;
+                height:100%;
+                object-fit:cover;
+                border-radius:50%;
+                ">`;
+
+        }
+
+        if (sidebarInitial) {
+
+            sidebarInitial.innerHTML =
+                `<img src="${savedPhoto}" 
+                style="
+                width:100%;
+                height:100%;
+                object-fit:cover;
+                border-radius:50%;
+                ">`;
+
+        }
+
+    }
+
+    // =====================================
+    // PHOTO UPLOAD
+    // =====================================
+
+    if (profilePhotoInput) {
+
+        profilePhotoInput.addEventListener("change", () => {
+
             const file =
-                event.target.files[0];
+                profilePhotoInput.files[0];
+
             if (!file) return;
+
             const reader =
                 new FileReader();
-            reader.onload = function(e) {
-                const imageUrl =
-                    e.target.result;
-                profileAvatar.style.backgroundImage =
-                    `url(${imageUrl})`;
-                profileAvatar.textContent = "";
+
+            reader.onload = () => {
+
+                const imageData =
+                    reader.result;
+
                 localStorage.setItem(
-                    "sidebarProfileImage",
-                    imageUrl
+                    "profilePhoto",
+                    imageData
                 );
+
+                if (profileAvatar) {
+
+                    profileAvatar.innerHTML =
+                        `<img src="${imageData}" 
+                        style="
+                        width:100%;
+                        height:100%;
+                        object-fit:cover;
+                        border-radius:50%;
+                        ">`;
+
+                }
+
+                if (sidebarInitial) {
+
+                    sidebarInitial.innerHTML =
+                        `<img src="${imageData}" 
+                        style="
+                        width:100%;
+                        height:100%;
+                        object-fit:cover;
+                        border-radius:50%;
+                        ">`;
+
+                }
+
             };
+
             reader.readAsDataURL(file);
+
         });
+
     }
+
+});
+// =========================================
+// MOVE LANGUAGE SELECT INTO USER MENU
+// =========================================
+
+window.addEventListener("load", function () {
+
+    const languageSelect =
+        document.getElementById("language-select");
+
+    const sidebarLanguageHolder =
+        document.getElementById("sidebar-language-holder");
+
+    if (
+        languageSelect &&
+        sidebarLanguageHolder &&
+        !sidebarLanguageHolder.contains(languageSelect)
+    ) {
+
+        sidebarLanguageHolder.appendChild(
+            languageSelect
+        );
+
+    }
+
 });

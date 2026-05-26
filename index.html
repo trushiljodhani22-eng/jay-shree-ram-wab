@@ -51,15 +51,8 @@
             <span class="sidebar-label">Books</span>
         </button>
         <div id="sidebar-history" class="sidebar-history">
-            <div class="history-item">
-                <span class="history-title">Recent Chat</span>
-                <button class="history-menu-btn" type="button" title="Chat options">⋮</button>
-                <div class="history-action-menu">
-                    <button type="button">🔗 Share</button>
-                    <button type="button">✏️ Rename</button>
-                    <button type="button">🗑️ Delete</button>
-                </div>
-            </div>
+            <div class="history-heading">Recently</div>
+            <div id="history-list" class="history-list"></div>
         </div>
         <div class="sidebar-user">
           <button id="user-menu-btn" class="user-menu-btn" type="button" aria-label="Open user menu">
@@ -76,6 +69,16 @@
               <span>👤</span>
               <span>Profile</span>
             </button>
+            <div class="user-language-box">
+
+                <label for="language-select">
+                    🌐 Language
+                </label>
+
+                <div id="sidebar-language-holder"></div>
+
+            </div>
+
             <button id="logout-btn" class="user-menu-option logout-option" type="button">
               <span>🚪</span>
               <span>Logout</span>
@@ -150,27 +153,34 @@
          PROFILE MODAL
     ========================================= -->
     <div id="profile-modal" class="profile-modal">
-      <div class="profile-modal-content">
-        <button id="close-profile-modal" class="close-profile-modal">
-          ✕
-        </button>
-        <div class="profile-avatar-wrapper">
-          <div id="profile-avatar" class="profile-avatar">
-            U
-          </div>
-          <label for="profile-image-input" class="profile-camera-btn">
+      <div class="profile-card">
+
+        <button id="profile-close-btn" class="profile-close-btn" type="button">×</button>
+
+        <div class="profile-avatar-wrap">
+          <div id="profile-avatar" class="profile-avatar">U</div>
+
+          <label for="profile-photo-input" class="camera-btn">
             📷
           </label>
+
           <input
             type="file"
-            id="profile-image-input"
+            id="profile-photo-input"
             accept="image/*"
             hidden
           >
         </div>
-        <p id="profile-email" class="profile-email">
+
+        <p id="profile-modal-email" class="profile-modal-email">
           user@email.com
         </p>
+
+        <div class="profile-language-box">
+          <label for="profile-language-select">Select Language</label>
+          <div id="profile-language-holder"></div>
+        </div>
+
       </div>
     </div>
 
@@ -179,6 +189,48 @@
     <script src="auth.js"></script>
     <script src="i18n.js"></script>
     <script src="script.js"></script>
+<script>
+window.addEventListener("load", function () {
+
+    const btn =
+        document.getElementById("user-menu-btn");
+
+    const panel =
+        document.getElementById("user-menu-panel");
+
+    if (!btn || !panel) {
+
+        console.error("USER MENU ELEMENT MISSING");
+
+        return;
+    }
+
+    btn.onclick = function (e) {
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        panel.classList.toggle("user-menu-open");
+
+        console.log("MENU TOGGLED");
+
+    };
+
+    document.addEventListener("click", function () {
+
+        panel.classList.remove("user-menu-open");
+
+    });
+
+    panel.onclick = function (e) {
+
+        e.stopPropagation();
+
+    };
+
+});
+</script>
 </body>
 
 </html>

@@ -215,57 +215,41 @@ if (typeof auth !== "undefined") {
 // UPDATE SIDEBAR USER MENU FROM FIREBASE USER
 // =========================================
 function updateSidebarUserMenu(user) {
-
     if (!user) return;
 
-    const initialEl =
-        document.getElementById("sidebar-user-initial");
+    const initialEl = document.getElementById("sidebar-user-initial");
+    const nameEl = document.getElementById("sidebar-user-name");
+    const emailEl = document.getElementById("sidebar-user-email");
+    const modalEmailEl = document.getElementById("profile-modal-email");
+    const profileAvatar = document.getElementById("profile-avatar");
 
-    const nameEl =
-        document.getElementById("sidebar-user-name");
+    const email = user.email || "";
+    const displayName = user.displayName || "";
+    const source = displayName || email || "User";
+    const initial = source.charAt(0).toUpperCase();
 
-    const emailEl =
-        document.getElementById("sidebar-user-email");
+    let cleanName = displayName || email || "User";
+    cleanName = cleanName.replace(".com", "");
 
-    const profileEmail =
-        document.getElementById("profile-email");
-
-    const email =
-        user.email || "";
-
-    const displayName =
-        user.displayName || "";
-
-    const source =
-        displayName || email || "User";
-
-    const initial =
-        source.charAt(0).toUpperCase();
+    const savedPhoto = localStorage.getItem("profilePhoto");
 
     if (initialEl) {
-        initialEl.textContent = initial;
+        if (savedPhoto) {
+            initialEl.innerHTML = `<img src="${savedPhoto}" alt="User photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+            initialEl.textContent = initial;
+        }
     }
 
-    if (nameEl) {
-        nameEl.textContent =
-            displayName || email;
+    if (profileAvatar) {
+        if (savedPhoto) {
+            profileAvatar.innerHTML = `<img src="${savedPhoto}" alt="Profile photo">`;
+        } else {
+            profileAvatar.textContent = initial;
+        }
     }
 
-    if (emailEl) {
-        emailEl.textContent = email;
-    }
-
-    if (profileEmail) {
-        profileEmail.textContent = email;
-    }
-
-    localStorage.setItem(
-        "sidebarUserEmail",
-        email
-    );
-
-    localStorage.setItem(
-        "sidebarUserInitial",
-        initial
-    );
+    if (nameEl) nameEl.textContent = cleanName;
+    if (emailEl) emailEl.textContent = email || "No email found";
+    if (modalEmailEl) modalEmailEl.textContent = email || "No email found";
 }
