@@ -1405,7 +1405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const userMenuPanel = document.getElementById("user-menu-panel");
 
     const newChatBtn = document.getElementById("new-chat-btn");
-    const searchChatBtn = document.getElementById("search-chat-btn");
+    const buyBookBtn = document.getElementById("buy-book-btn");
     const booksBtn = document.getElementById("books-btn");
 
     const chatBox = document.getElementById("chat-box");
@@ -1539,14 +1539,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // SEARCH CHATS BUTTON
+    // BUY BOOK BUTTON
     // =========================================
 
-    if (searchChatBtn && userInput) {
+    if (buyBookBtn) {
 
-        searchChatBtn.addEventListener("click", () => {
+        buyBookBtn.addEventListener("click", () => {
 
-            userInput.focus();
+            alert("Book Store Coming Soon 📚");
 
         });
 

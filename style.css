@@ -1711,6 +1711,15 @@ z-index: 2;
     display: inline-block !important;
 }
 
+.sidebar-book-icon {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
 /* --- Labels: hidden when sidebar closed --- */
 .sidebar-label,
 #sidebar-user-name {
