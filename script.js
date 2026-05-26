@@ -762,19 +762,103 @@ function checkAndAwardBadges(msgText) {
 // ============================================================
 
 const CHAT_STORAGE_KEY = "spiritualChatHistory";
+const MAX_CHATS = 50;
+const MAX_MESSAGES_PER_CHAT = 200;
 let currentChatId = null;
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    if (!text || typeof text !== 'string') return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Validate message before saving
+function isValidMessage(text) {
+    if (!text || typeof text !== 'string') return false;
+    const trimmed = text.trim();
+    if (trimmed.length === 0) return false;
+    if (trimmed.length < 2) return false;
+    return true;
+}
+
+// Generate unique chat ID with collision prevention
+function generateUniqueId() {
+    let id = Date.now().toString();
+    const existingChats = getStoredChats();
+    const existingIds = new Set(existingChats.map(c => c.id));
+    while (existingIds.has(id)) {
+        id = (Date.now() + Math.random()).toString();
+    }
+    return id;
+}
 
 function getStoredChats() {
     try {
         const data = localStorage.getItem(CHAT_STORAGE_KEY);
-        return data ? JSON.parse(data) : [];
+        if (!data) return [];
+        
+        const chats = JSON.parse(data);
+        
+        // Validate data structure
+        if (!Array.isArray(chats)) {
+            console.error("Chat history corrupted: not an array, resetting");
+            localStorage.removeItem(CHAT_STORAGE_KEY);
+            return [];
+        }
+        
+        // Filter out invalid chats
+        const validChats = chats.filter(chat => {
+            if (!chat || typeof chat !== 'object') return false;
+            if (!chat.id || typeof chat.id !== 'string') return false;
+            if (!chat.title || typeof chat.title !== 'string') return false;
+            if (!Array.isArray(chat.messages)) return false;
+            return true;
+        });
+        
+        // Remove duplicate chat IDs
+        const seenIds = new Set();
+        const uniqueChats = validChats.filter(chat => {
+            if (seenIds.has(chat.id)) {
+                console.warn(`Duplicate chat ID found: ${chat.id}, removing`);
+                return false;
+            }
+            seenIds.add(chat.id);
+            return true;
+        });
+        
+        // If we filtered out bad data, save the cleaned version
+        if (uniqueChats.length !== chats.length) {
+            console.warn("Cleaned corrupted chat history data");
+            try {
+                localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(uniqueChats));
+            } catch (e) {
+                console.error("Failed to save cleaned chat history:", e);
+            }
+        }
+        
+        return uniqueChats;
     } catch (e) {
+        console.error("Failed to parse chat history, resetting:", e);
+        localStorage.removeItem(CHAT_STORAGE_KEY);
         return [];
     }
 }
 
 function saveStoredChats(chats) {
     try {
+        if (!Array.isArray(chats)) {
+            console.error("Invalid chats data: not an array");
+            return;
+        }
+        
+        // Limit to maximum chats
+        if (chats.length > MAX_CHATS) {
+            console.warn(`Chat count exceeds ${MAX_CHATS}, truncating`);
+            chats = chats.slice(0, MAX_CHATS);
+        }
+        
         localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chats));
     } catch (e) {
         console.error("Failed to save chat history:", e);
@@ -789,68 +873,110 @@ function generateChatTitle(firstMessage) {
 }
 
 function createNewChat() {
-    const chats = getStoredChats();
-    const newChat = {
-        id: Date.now().toString(),
-        title: "New Chat",
-        messages: [],
-        createdAt: new Date().toISOString()
-    };
-    chats.unshift(newChat);
-    saveStoredChats(chats);
-    currentChatId = newChat.id;
-    return newChat;
+    try {
+        const chats = getStoredChats();
+        const newChat = {
+            id: generateUniqueId(),
+            title: "New Chat",
+            messages: [],
+            createdAt: new Date().toISOString()
+        };
+        chats.unshift(newChat);
+        saveStoredChats(chats);
+        currentChatId = newChat.id;
+        // Persist current chat ID
+        localStorage.setItem("currentChatId", currentChatId);
+        return newChat;
+    } catch (e) {
+        console.error("Failed to create new chat:", e);
+        return null;
+    }
 }
 
 function saveChatMessage(text, isUser = true) {
-    if (!text || !text.trim()) return;
-    
-    const chats = getStoredChats();
-    let chat = chats.find(c => c.id === currentChatId);
-    
-    if (!chat) {
-        chat = createNewChat();
+    try {
+        // Validate message
+        if (!isValidMessage(text)) {
+            console.warn("Invalid message, not saving");
+            return;
+        }
+        
+        const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Failed to get chats: invalid data");
+            return;
+        }
+        
+        let chat = chats.find(c => c.id === currentChatId);
+        
+        if (!chat) {
+            chat = createNewChat();
+            if (!chat) {
+                console.error("Failed to create new chat");
+                return;
+            }
+            // Refresh chats after creating new one
+            const updatedChats = getStoredChats();
+            chat = updatedChats.find(c => c.id === currentChatId);
+            if (!chat) return;
+        }
+        
+        // Limit messages per chat
+        if (chat.messages.length >= MAX_MESSAGES_PER_CHAT) {
+            console.warn(`Chat has reached maximum ${MAX_MESSAGES_PER_CHAT} messages`);
+            chat.messages.shift(); // Remove oldest message
+        }
+        
+        chat.messages.push({
+            text: text.trim(),
+            isUser: isUser,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Update title from first user message
+        if (isUser && chat.messages.filter(m => m.isUser).length === 1) {
+            chat.title = generateChatTitle(text);
+        }
+        
+        // Move chat to top
+        const chatIndex = chats.findIndex(c => c.id === chat.id);
+        if (chatIndex > 0) {
+            chats.splice(chatIndex, 1);
+            chats.unshift(chat);
+        }
+        
+        saveStoredChats(chats);
+        renderChatHistory();
+    } catch (e) {
+        console.error("Failed to save chat message:", e);
     }
-    
-    chat.messages.push({
-        text: text.trim(),
-        isUser: isUser,
-        timestamp: new Date().toISOString()
-    });
-    
-    // Update title from first user message
-    if (isUser && chat.messages.filter(m => m.isUser).length === 1) {
-        chat.title = generateChatTitle(text);
-    }
-    
-    // Move chat to top
-    const chatIndex = chats.findIndex(c => c.id === chat.id);
-    if (chatIndex > 0) {
-        chats.splice(chatIndex, 1);
-        chats.unshift(chat);
-    }
-    
-    saveStoredChats(chats);
-    renderChatHistory();
 }
 
 function renderChatHistory() {
-    const historyList = document.getElementById("history-list");
-    if (!historyList) return;
-    
-    const chats = getStoredChats();
-    historyList.innerHTML = "";
-    
-    chats.forEach(chat => {
-        const historyItem = document.createElement("div");
-        historyItem.className = "history-item";
-        historyItem.dataset.chatId = chat.id;
+    try {
+        const historyList = document.getElementById("history-list");
+        if (!historyList) return;
         
-        const titleSpan = document.createElement("span");
-        titleSpan.className = "history-title";
-        titleSpan.textContent = chat.title;
+        const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Invalid chats data in renderChatHistory");
+            return;
+        }
         
-        const menuBtn = document.createElement("button");
+        historyList.innerHTML = "";
+        
+        chats.forEach(chat => {
+            if (!chat || !chat.id) return;
+            
+            const historyItem = document.createElement("div");
+            historyItem.className = "history-item";
+            historyItem.dataset.chatId = chat.id;
+            
+            const titleSpan = document.createElement("span");
+            titleSpan.className = "history-title";
+            titleSpan.textContent = escapeHtml(chat.title);
+            
+            const menuBtn = document.createElement("button");
         menuBtn.className = "history-menu-btn";
         menuBtn.innerHTML = "⋮";
         menuBtn.setAttribute("aria-label", "Chat options");
@@ -891,71 +1017,205 @@ function renderChatHistory() {
         historyItem.appendChild(menuBtn);
         historyItem.appendChild(actionMenu);
         
+        // Add click handler to load chat
+        historyItem.addEventListener("click", () => {
+            loadChat(chat.id);
+        });
+        
         historyList.appendChild(historyItem);
     });
+    } catch (e) {
+        console.error("Failed to render chat history:", e);
+    }
 }
 
-function deleteChat(chatId) {
-    const chats = getStoredChats();
-    const filteredChats = chats.filter(c => c.id !== chatId);
-    saveStoredChats(filteredChats);
-    
-    if (currentChatId === chatId) {
-        currentChatId = null;
-        // Clear chat box except welcome message
+function loadChat(chatId) {
+    try {
+        if (!chatId) {
+            console.error("No chat ID provided to loadChat");
+            return;
+        }
+        
+        const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Invalid chats data in loadChat");
+            return;
+        }
+        
+        const chat = chats.find(c => c.id === chatId);
+        if (!chat) {
+            console.error(`Chat not found: ${chatId}`);
+            return;
+        }
+        
+        currentChatId = chatId;
+        // Persist current chat ID
+        localStorage.setItem("currentChatId", currentChatId);
+        
         const chatBox = document.getElementById("chat-box");
-        if (chatBox) {
+        if (!chatBox) {
+            console.error("Chat box element not found");
+            return;
+        }
+        
+        chatBox.innerHTML = "";
+        
+        // If chat has no messages, show welcome message
+        if (!chat.messages || chat.messages.length === 0) {
             const welcomeMsg = document.getElementById("welcome-msg");
-            chatBox.innerHTML = "";
             if (welcomeMsg) {
                 const welcomeDiv = document.createElement("div");
                 welcomeDiv.className = "message ai-message";
                 welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
                 chatBox.appendChild(welcomeDiv);
             }
+            return;
         }
+        
+        // Render all messages from the chat
+        chat.messages.forEach(msg => {
+            if (!msg || !msg.text) return;
+            const className = msg.isUser ? "user-message" : "ai-message";
+            appendMessage(escapeHtml(msg.text), className);
+        });
+    } catch (e) {
+        console.error("Failed to load chat:", e);
     }
-    
-    renderChatHistory();
+}
+
+function deleteChat(chatId) {
+    try {
+        if (!chatId) {
+            console.error("No chat ID provided to deleteChat");
+            return;
+        }
+        
+        const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Invalid chats data in deleteChat");
+            return;
+        }
+        
+        const filteredChats = chats.filter(c => c.id !== chatId);
+        saveStoredChats(filteredChats);
+        
+        if (currentChatId === chatId) {
+            currentChatId = null;
+            // Clear persisted chat ID
+            localStorage.removeItem("currentChatId");
+            // Clear chat box except welcome message
+            const chatBox = document.getElementById("chat-box");
+            if (chatBox) {
+                const welcomeMsg = document.getElementById("welcome-msg");
+                chatBox.innerHTML = "";
+                if (welcomeMsg) {
+                    const welcomeDiv = document.createElement("div");
+                    welcomeDiv.className = "message ai-message";
+                    welcomeDiv.appendChild(welcomeMsg.cloneNode(true));
+                    chatBox.appendChild(welcomeDiv);
+                }
+            }
+        }
+        
+        renderChatHistory();
+    } catch (e) {
+        console.error("Failed to delete chat:", e);
+    }
 }
 
 function renameChat(chatId) {
-    const chats = getStoredChats();
-    const chat = chats.find(c => c.id === chatId);
-    if (!chat) return;
-    
-    const newTitle = prompt("Enter new title:", chat.title);
-    if (newTitle !== null && newTitle.trim()) {
-        chat.title = newTitle.trim();
-        saveStoredChats(chats);
-        renderChatHistory();
+    try {
+        if (!chatId) {
+            console.error("No chat ID provided to renameChat");
+            return;
+        }
+        
+        const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Invalid chats data in renameChat");
+            return;
+        }
+        
+        const chat = chats.find(c => c.id === chatId);
+        if (!chat) {
+            console.error(`Chat not found for rename: ${chatId}`);
+            return;
+        }
+        
+        const newTitle = prompt("Enter new title:", chat.title);
+        if (newTitle !== null && newTitle.trim()) {
+            chat.title = escapeHtml(newTitle.trim());
+            saveStoredChats(chats);
+            renderChatHistory();
+        }
+    } catch (e) {
+        console.error("Failed to rename chat:", e);
     }
 }
 
 function shareChat(chatId) {
-    const chats = getStoredChats();
-    const chat = chats.find(c => c.id === chatId);
-    if (!chat) return;
-    
-    const chatText = chat.messages.map(m => `${m.isUser ? "You" : "AI"}: ${m.text}`).join("\n\n");
-    const shareContent = `${chat.title}\n\n${chatText}`;
-    
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(shareContent)
-            .then(() => alert("Chat copied to clipboard!"))
-            .catch(() => alert(shareContent));
-    } else {
-        alert(shareContent);
+    try {
+        if (!chatId) {
+            console.error("No chat ID provided to shareChat");
+            return;
+        }
+        
+        const chats = getStoredChats();
+        if (!Array.isArray(chats)) {
+            console.error("Invalid chats data in shareChat");
+            return;
+        }
+        
+        const chat = chats.find(c => c.id === chatId);
+        if (!chat) {
+            console.error(`Chat not found for share: ${chatId}`);
+            return;
+        }
+        
+        const chatText = chat.messages.map(m => {
+            if (!m || !m.text) return '';
+            return `${m.isUser ? "You" : "AI"}: ${escapeHtml(m.text)}`;
+        }).filter(m => m).join("\n\n");
+        const shareContent = `${escapeHtml(chat.title)}\n\n${chatText}`;
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(shareContent)
+                .then(() => alert("Chat copied to clipboard!"))
+                .catch(() => alert(shareContent));
+        } else {
+            alert(shareContent);
+        }
+    } catch (e) {
+        console.error("Failed to share chat:", e);
     }
 }
 
 // Initialize chat history on page load
 function initializeChatHistory() {
-    // Start with a new empty chat (don't auto-load old chat)
-    currentChatId = null;
-    renderChatHistory();
-    
-    // Create a new chat when user sends first message
+    try {
+        // Restore current chat ID from localStorage if available
+        const savedChatId = localStorage.getItem("currentChatId");
+        if (savedChatId) {
+            const chats = getStoredChats();
+            const chatExists = chats.find(c => c.id === savedChatId);
+            if (chatExists) {
+                currentChatId = savedChatId;
+                console.log("Restored current chat:", currentChatId);
+            } else {
+                // Saved chat no longer exists, clear it
+                localStorage.removeItem("currentChatId");
+                currentChatId = null;
+            }
+        } else {
+            currentChatId = null;
+        }
+        
+        renderChatHistory();
+    } catch (e) {
+        console.error("Failed to initialize chat history:", e);
+        currentChatId = null;
+        renderChatHistory();
+    }
 }
 
 // ============================================================
@@ -1120,7 +1380,16 @@ window.addEventListener("spiritual-auth-success", () => {
 // SIDEBAR INTERACTION LOGIC
 // =========================================
 
+// Flag to prevent duplicate event listener initialization
+let sidebarInitialized = false;
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Prevent duplicate initialization
+    if (sidebarInitialized) {
+        console.warn("Sidebar already initialized, skipping");
+        return;
+    }
+    sidebarInitialized = true;
 
     // Initialize chat history system
     initializeChatHistory();
@@ -1250,8 +1519,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         newChatBtn.addEventListener("click", () => {
 
-            // Start a new chat session
-            currentChatId = null;
+            // Create a new empty chat
+            createNewChat();
             
             // Clear chat box except welcome message
             const welcomeMsg = document.getElementById("welcome-msg");
@@ -1682,3 +1951,267 @@ window.addEventListener("load", function () {
     }
 
 });
+// =========================================
+// FORCE LOCALSTORAGE CHAT HISTORY SYSTEM
+// =========================================
+
+(function () {
+    const STORAGE_KEY = "spiritual_chat_history";
+    const ACTIVE_KEY = "spiritual_active_chat_id";
+
+    function safeReadChats() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            const chats = raw ? JSON.parse(raw) : [];
+            return Array.isArray(chats) ? chats : [];
+        } catch (e) {
+            console.error("Chat history corrupted. Resetting.", e);
+            localStorage.removeItem(STORAGE_KEY);
+            return [];
+        }
+    }
+
+    function safeSaveChats(chats) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(chats.slice(0, 50)));
+        } catch (e) {
+            console.error("Failed to save chat history:", e);
+        }
+    }
+
+    function makeId() {
+        return "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    }
+
+    function getActiveChatId() {
+        return localStorage.getItem(ACTIVE_KEY);
+    }
+
+    function setActiveChatId(id) {
+        localStorage.setItem(ACTIVE_KEY, id);
+    }
+
+    function createNewChat() {
+        const chat = {
+            id: makeId(),
+            title: "New Chat",
+            messages: [],
+            createdAt: Date.now()
+        };
+
+        const chats = safeReadChats();
+        chats.unshift(chat);
+        safeSaveChats(chats);
+        setActiveChatId(chat.id);
+        renderHistory();
+        clearChatBox();
+        return chat;
+    }
+
+    function getOrCreateActiveChat() {
+        const chats = safeReadChats();
+        let active = chats.find(c => c.id === getActiveChatId());
+
+        if (!active) {
+            return createNewChat();
+        }
+
+        return active;
+    }
+
+    function saveUserMessage(text) {
+        if (!text || text.trim().length < 2) return;
+
+        const chats = safeReadChats();
+        let activeId = getActiveChatId();
+        let chat = chats.find(c => c.id === activeId);
+
+        if (!chat) {
+            chat = {
+                id: makeId(),
+                title: "New Chat",
+                messages: [],
+                createdAt: Date.now()
+            };
+            chats.unshift(chat);
+            setActiveChatId(chat.id);
+        }
+
+        const cleanText = text.trim();
+
+        chat.messages.push({
+            sender: "user",
+            text: cleanText,
+            time: Date.now()
+        });
+
+        if (chat.title === "New Chat") {
+            chat.title = cleanText.slice(0, 35);
+        }
+
+        safeSaveChats(chats);
+        renderHistory();
+    }
+
+    function clearChatBox() {
+        const chatBox = document.getElementById("chat-box");
+        if (!chatBox) return;
+
+        chatBox.innerHTML = `
+            <div class="message ai-message">
+                <p>Jay Shree Ram! Welcome Parth, how can I help you today?</p>
+            </div>
+        `;
+    }
+
+    function openChat(id) {
+        const chats = safeReadChats();
+        const chat = chats.find(c => c.id === id);
+        const chatBox = document.getElementById("chat-box");
+
+        if (!chat || !chatBox) return;
+
+        setActiveChatId(id);
+        chatBox.innerHTML = "";
+
+        chat.messages.forEach(msg => {
+            const div = document.createElement("div");
+            div.className = msg.sender === "user" ? "message user-message" : "message ai-message";
+            div.textContent = msg.text;
+            chatBox.appendChild(div);
+        });
+    }
+
+    function renderHistory() {
+        const list = document.getElementById("history-list");
+        if (!list) return;
+
+        const chats = safeReadChats();
+        list.innerHTML = "";
+
+        chats.forEach(chat => {
+            const item = document.createElement("div");
+            item.className = "history-item";
+
+            const title = document.createElement("span");
+            title.className = "history-title";
+            title.textContent = chat.title || "New Chat";
+
+            const menuBtn = document.createElement("button");
+            menuBtn.className = "history-menu-btn";
+            menuBtn.type = "button";
+            menuBtn.textContent = "⋮";
+
+            const menu = document.createElement("div");
+            menu.className = "history-action-menu";
+
+            const renameBtn = document.createElement("button");
+            renameBtn.textContent = "✏️ Rename";
+
+            const shareBtn = document.createElement("button");
+            shareBtn.textContent = "🔗 Share";
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "🗑️ Delete";
+
+            menu.append(renameBtn, shareBtn, deleteBtn);
+            item.append(title, menuBtn, menu);
+            list.appendChild(item);
+
+            title.addEventListener("click", () => openChat(chat.id));
+
+            menuBtn.addEventListener("click", e => {
+                e.stopPropagation();
+                document.querySelectorAll(".history-action-menu").forEach(m => {
+                    if (m !== menu) m.classList.remove("history-menu-open");
+                });
+                menu.classList.toggle("history-menu-open");
+            });
+
+            renameBtn.addEventListener("click", e => {
+                e.stopPropagation();
+                const newName = prompt("Enter new chat name:", chat.title);
+                if (!newName) return;
+
+                const all = safeReadChats();
+                const target = all.find(c => c.id === chat.id);
+                if (target) target.title = newName.trim().slice(0, 50);
+                safeSaveChats(all);
+                renderHistory();
+            });
+
+            shareBtn.addEventListener("click", e => {
+                e.stopPropagation();
+                const text = chat.messages.map(m => `${m.sender}: ${m.text}`).join("\n");
+
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text || chat.title);
+                    alert("Chat copied.");
+                } else {
+                    alert(text || chat.title);
+                }
+            });
+
+            deleteBtn.addEventListener("click", e => {
+                e.stopPropagation();
+                const all = safeReadChats().filter(c => c.id !== chat.id);
+                safeSaveChats(all);
+
+                if (getActiveChatId() === chat.id) {
+                    localStorage.removeItem(ACTIVE_KEY);
+                    clearChatBox();
+                }
+
+                renderHistory();
+            });
+        });
+    }
+
+    function hookInput() {
+        const input = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+        const newChatBtn = document.getElementById("new-chat-btn");
+
+        if (input && !input.dataset.historyHooked) {
+            input.dataset.historyHooked = "true";
+
+            input.addEventListener("keydown", e => {
+                if (e.key === "Enter") {
+                    saveUserMessage(input.value);
+                }
+            });
+        }
+
+        if (sendBtn && !sendBtn.dataset.historyHooked) {
+            sendBtn.dataset.historyHooked = "true";
+
+            sendBtn.addEventListener("click", () => {
+                if (input) saveUserMessage(input.value);
+            });
+        }
+
+        if (newChatBtn && !newChatBtn.dataset.historyHooked) {
+            newChatBtn.dataset.historyHooked = "true";
+
+            newChatBtn.addEventListener("click", () => {
+                createNewChat();
+            });
+        }
+    }
+
+    window.addEventListener("load", () => {
+        if (!document.getElementById("history-list")) {
+            console.error("#history-list missing. Add it inside #sidebar-history.");
+            return;
+        }
+
+        if (!getActiveChatId()) {
+            createNewChat();
+        }
+
+        renderHistory();
+        hookInput();
+
+        console.log("Chat history system loaded.");
+    });
+})();
