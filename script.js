@@ -17,27 +17,7 @@ let questionCount = 0;
 const BADGE_LANG_MAP = {
     en: { badge: "Badge", congrats: "🎉 Congratulations! You have earned a new spiritual badge!" },
     gu: { badge: "બેઝ", congrats: "🎉 અભિનંદન! તમે નવો આધ્યાત્મિક બેઝ અર્જિત કર્યો!" },
-    hi: { badge: "बैज", congrats: "🎉 बधाई! आपने एक नया आध्यात्मिक बैज अर्जित किया!" },
-    mr: { badge: "बॅज", congrats: "🎉 अभिनंदन! तुम्हाला नवीन आध्यात्मिक बॅज मिळाला!" },
-    pa: { badge: "ਬੈਜ", congrats: "🎉 ਵਧਾਈ ਹੋਵੇ! ਤੁਸੀਂ ਨਵਾਂ ਆਧਿਆਤਮਿਕ ਬੈਜ ਹਾਸਲ ਕੀਤਾ!" },
-    bn: { badge: "ব্যাজ", congrats: "🎉 অভিনন্দন! আপনি একটি নতুন আধ্যাত্মিক ব্যাজ পেয়েছেন!" },
-    ta: { badge: "பேட்ஜ்", congrats: "🎉 வாழ்த்துகள்! புதிய ஆன்மீக பேட்ஜ் கிடைத்தது!" },
-    te: { badge: "బ్యాడ్జ్", congrats: "🎉 అభినందనలు! మీరు కొత్త ఆధ్యాత్మిక బ్యాడ్జ్ పొందారు!" },
-    kn: { badge: "ಬ್ಯಾಡ್ಜ್", congrats: "🎉 ಅಭಿನಂದನೆಗಳು! ನೀವು ಹೊಸ ಆಧ್ಯಾತ್ಮಿಕ ಬ್ಯಾಡ್ಜ್ ಪಡೆದಿದ್ದೀರಿ!" },
-    ml: { badge: "ബാഡ്ജ്", congrats: "🎉 അഭിനന്ദനങ്ങൾ! നിങ്ങൾക്ക് പുതിയ ആത്മീയ ബാഡ്ജ് ലഭിച്ചു!" },
-    or: { badge: "ବ୍ୟାଜ୍", congrats: "🎉 ଅଭିନନ୍ଦନ! ଆପଣ ନୂଆ ଆଧ୍ୟାତ୍ମିକ ବ୍ୟାଜ୍ ପାଇଛନ୍ତି!" },
-    as: { badge: "বেজ", congrats: "🎉 অভিনন্দন! আপুনি এটা নতুন আধ্যাত্মিক বেজ পাইছে!" },
-    ur: { badge: "بیج", congrats: "🎉 مبارک ہو! آپ نے نیا روحانی بیج حاصل کیا!" },
-    sa: { badge: "चिह्नम्", congrats: "🎉 अभिनन्दनम्! भवान् नूतनं आध्यात्मिकं चिह्नं प्राप्तवान्!" },
-    gom: { badge: "बॅज", congrats: "🎉 परबीं! तुमका नवो आध्यात्मिक बॅज मेळ्ळो!" },
-    ks: { badge: "بیج", congrats: "🎉 مبارک! توہہ نئو روحانی بیج حاصل کور!" },
-    mni: { badge: "ব্যাজ", congrats: "🎉 ꯅꯨꯡꯉꯥꯏꯕꯥ! ꯅꯍꯥꯛꯅꯥ ꯑꯅꯧꯕꯥ ꯊꯥꯖꯕꯒꯤ ব্যাজ ꯐꯪꯂꯦ!" },
-    ne: { badge: "ब्याज", congrats: "🎉 बधाई छ! तपाईंले नयाँ आध्यात्मिक ब्याज पाउनुभयो!" },
-    sd: { badge: "بيج", congrats: "🎉 مبارڪون! توهان نئون روحاني بيج حاصل ڪيو!" },
-    doi: { badge: "बैज", congrats: "🎉 बधाई! तुसें नवा आध्यात्मिक बैज हासल कीता!" },
-    mai: { badge: "बैज", congrats: "🎉 बधाई! अहाँ नव आध्यात्मिक बैज प्राप्त केलहुँ!" },
-    brx: { badge: "बैज", congrats: "🎉 बधाइ! नोंथाङा गोदान आध्यात्मिक बैज मोनबाय!" },
-    sat: { badge: "ᱵᱮᱡ", congrats: "🎉 ᱥᱟᱨᱦᱟᱣ! ᱟᱢ ᱱᱟᱶᱟ ᱟᱫᱷᱭᱟᱛᱢᱤᱠ ᱵᱮᱡ ᱧᱟᱢ ᱠᱮᱫᱟ!" }
+    hi: { badge: "बैज", congrats: "🎉 बधाई! आपने एक नया आध्यात्मिक बैज अर्जित किया!" }
 };
 
 function getLangPack(lang) {
@@ -667,22 +647,19 @@ function getBadgeLabel(lang, num) {
 
 
 function getBadgeTitleByLang(badge, lang) {
-    // Full custom badge titles are available in Gujarati, Hindi, and English.
-    // For every other selected website language, the popup label/congrats is localized
-    // and the badge title safely falls back to English to avoid wrong machine translations.
+    // Badge titles are available in Gujarati, Hindi, and English.
+    // Fallback to English for unsupported languages.
     if (lang === "gu" && badge.gu) return badge.gu;
     if (lang === "hi" && badge.hi) return badge.hi;
-    if (badge[lang]) return badge[lang];
-    return badge.en || badge.gu || badge.key;
+    return badge.en;
 }
 
 function getBadgeMeaningByLang(badge, lang) {
-    // Full custom meanings are available in Gujarati, Hindi, and English.
-    // Other languages use safe English fallback while popup UI remains localized.
+    // Badge meanings are available in Gujarati, Hindi, and English.
+    // Fallback to English for unsupported languages.
     if (lang === "gu" && badge.meaning_gu) return badge.meaning_gu;
     if (lang === "hi" && badge.meaning_hi) return badge.meaning_hi;
-    if (badge[`meaning_${lang}`]) return badge[`meaning_${lang}`];
-    return badge.meaning_en || badge.meaning_gu || "";
+    return badge.meaning_en;
 }
 
 function getHighestBadgeTitle(lang) {

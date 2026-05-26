@@ -5,11 +5,8 @@ const I18n = (function () {
     const STORAGE_KEY = "selectedLanguage";
     const DEFAULT_LANG = "en";
     const USER_NAME = "Parth";
-    const SUPPORTED_LANGS = [
-        "en", "gu", "hi", "mr", "ta", "sa", "pa", "bn", "te", "kn", "ml", "or",
-        "as", "ur", "gom", "ks", "mni", "ne", "sd", "doi", "mai", "brx", "sat"
-    ];
-    const RTL_LANGS = ["ur", "sd", "ks"];
+    const SUPPORTED_LANGS = ["en", "gu", "hi"];
+    const RTL_LANGS = [];
 
     let currentLang = DEFAULT_LANG;
     let strings = {};
@@ -132,11 +129,7 @@ const I18n = (function () {
 
     function getStoredLang() {
         try {
-            let stored = localStorage.getItem(STORAGE_KEY);
-            if (stored === "kok") {
-                stored = "gom";
-                localStorage.setItem(STORAGE_KEY, "gom");
-            }
+            const stored = localStorage.getItem(STORAGE_KEY);
             if (stored && SUPPORTED_LANGS.includes(stored)) return stored;
         } catch (e) { /* ignore */ }
         return DEFAULT_LANG;
