@@ -1292,7 +1292,18 @@ async function sendMessage() {
         appendMessage(response, "ai-message");
 
         // Save AI response to chat history
-        saveChatMessage(response, false);
+        if (response && response.trim().length > 0) {
+            // Check for duplicate AI replies
+            const chats = getStoredChats();
+            const chat = chats.find(c => c.id === currentChatId);
+            const lastMessage = chat && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+            const isDuplicate = lastMessage && lastMessage.sender === "ai" && lastMessage.text === response.trim();
+            
+            if (!isDuplicate) {
+                saveChatMessage(response, false);
+                console.log("AI answer saved to history");
+            }
+        }
 
         // ✅ Badge system — count only 20+ character meaningful user messages
         checkAndAwardBadges(text);
@@ -1443,11 +1454,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // Event delegation for dynamically created history menu buttons
     document.addEventListener("click", (e) => {
         if (e.target.classList.contains("history-menu-btn")) {
+            e.preventDefault();
             e.stopPropagation();
             const currentMenu = e.target.parentElement.querySelector(".history-action-menu");
-            const isOpen = currentMenu.style.display === "block";
+            if (!currentMenu) return;
+            
+            // Close all other open history menus first
             closeAllHistoryMenus();
-            currentMenu.style.display = isOpen ? "none" : "block";
+            
+            // Toggle the menu open class
+            currentMenu.classList.toggle("history-menu-open");
+            
+            // Set popup position using getBoundingClientRect
+            const btnRect = e.target.getBoundingClientRect();
+            currentMenu.style.position = "fixed";
+            currentMenu.style.top = `${btnRect.bottom + 5}px`;
+            currentMenu.style.left = `${btnRect.left}px`;
         }
     });
 
@@ -2123,14 +2145,6 @@ window.addEventListener("load", function () {
 
             title.addEventListener("click", () => openChat(chat.id));
 
-            menuBtn.addEventListener("click", e => {
-                e.stopPropagation();
-                document.querySelectorAll(".history-action-menu").forEach(m => {
-                    if (m !== menu) m.classList.remove("history-menu-open");
-                });
-                menu.classList.toggle("history-menu-open");
-            });
-
             renameBtn.addEventListener("click", e => {
                 e.stopPropagation();
                 const newName = prompt("Enter new chat name:", chat.title);
@@ -2248,4 +2262,102 @@ window.addEventListener("load", function () {
         attributes: true,
         attributeFilter: ["class"]
     });
+})();
+// =====================================================
+// FINAL PATCH: SAVE AI ANSWERS INTO VISIBLE HISTORY
+// =====================================================
+
+(function () {
+    if (window.__aiVisibleHistoryPatchDone) return;
+    window.__aiVisibleHistoryPatchDone = true;
+
+    const VISIBLE_HISTORY_KEY = "spiritual_chat_history";
+    const ACTIVE_CHAT_KEY = "spiritual_active_chat_id";
+
+    function readVisibleChats() {
+        try {
+            const raw = localStorage.getItem(VISIBLE_HISTORY_KEY);
+            const chats = raw ? JSON.parse(raw) : [];
+            return Array.isArray(chats) ? chats : [];
+        } catch (error) {
+            console.error("Visible history read failed:", error);
+            return [];
+        }
+    }
+
+    function saveVisibleChats(chats) {
+        try {
+            localStorage.setItem(
+                VISIBLE_HISTORY_KEY,
+                JSON.stringify(chats.slice(0, 50))
+            );
+        } catch (error) {
+            console.error("Visible history save failed:", error);
+        }
+    }
+
+    function makeChatId() {
+        return "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    }
+
+    function saveAIToVisibleHistory(aiText) {
+        const cleanText = String(aiText || "").trim();
+
+        if (!cleanText || cleanText.length < 2) return;
+
+        let chats = readVisibleChats();
+        let activeId = localStorage.getItem(ACTIVE_CHAT_KEY);
+        let chat = chats.find((c) => c.id === activeId);
+
+        if (!chat) {
+            chat = {
+                id: makeChatId(),
+                title: "New Chat",
+                messages: [
+                    {
+                        sender: "ai",
+                        text: "Jay Shree Ram! Welcome Parth, how can I help you today?",
+                        time: Date.now()
+                    }
+                ],
+                createdAt: Date.now()
+            };
+
+            chats.unshift(chat);
+            activeId = chat.id;
+            localStorage.setItem(ACTIVE_CHAT_KEY, activeId);
+        }
+
+        const lastMessage = chat.messages[chat.messages.length - 1];
+
+        if (
+            lastMessage &&
+            lastMessage.sender === "ai" &&
+            lastMessage.text === cleanText
+        ) {
+            return;
+        }
+
+        chat.messages.push({
+            sender: "ai",
+            text: cleanText,
+            time: Date.now()
+        });
+
+        saveVisibleChats(chats);
+
+        console.log("AI answer saved into visible history");
+    }
+
+    const oldSaveChatMessage = window.saveChatMessage || saveChatMessage;
+
+    window.saveChatMessage = function (text, isUser = true) {
+        if (typeof oldSaveChatMessage === "function") {
+            oldSaveChatMessage(text, isUser);
+        }
+
+        if (isUser === false) {
+            saveAIToVisibleHistory(text);
+        }
+    };
 })();
