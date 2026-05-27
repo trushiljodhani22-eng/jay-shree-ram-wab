@@ -976,6 +976,40 @@ function saveChatMessage(text, isUser = true) {
     }
 }
 
+// History menu close timer - global scope for accessibility
+let historyMenuCloseTimer = null;
+
+// Start 15-second close timer when mouse leaves sidebar and all menus
+function startHistoryMenuCloseTimer() {
+    if (historyMenuCloseTimer) {
+        clearTimeout(historyMenuCloseTimer);
+    }
+    historyMenuCloseTimer = setTimeout(() => {
+        closeAllHistoryMenusGlobal();
+    }, 15000);
+}
+
+// Cancel close timer when mouse enters sidebar or menu
+function cancelHistoryMenuCloseTimer() {
+    if (historyMenuCloseTimer) {
+        clearTimeout(historyMenuCloseTimer);
+        historyMenuCloseTimer = null;
+    }
+}
+
+// Global function to close all history menus
+function closeAllHistoryMenusGlobal() {
+    if (historyMenuCloseTimer) {
+        clearTimeout(historyMenuCloseTimer);
+        historyMenuCloseTimer = null;
+    }
+    document.querySelectorAll(".history-action-menu").forEach(menu => {
+        menu.classList.remove("history-menu-open");
+        menu.style.top = "";
+        menu.style.left = "";
+    });
+}
+
 function renderChatHistory() {
     try {
         const historyList = document.getElementById("history-list");
@@ -1004,48 +1038,146 @@ function renderChatHistory() {
         menuBtn.className = "history-menu-btn";
         menuBtn.innerHTML = "⋮";
         menuBtn.setAttribute("aria-label", "Chat options");
-        
+
+        // Action menu appended to BODY so sidebar overflow:hidden never clips it
         const actionMenu = document.createElement("div");
         actionMenu.className = "history-action-menu";
-        actionMenu.style.display = "none";
-        
+        // Note: display:none and all styles are in CSS. Only top is set dynamically on open.
+
         const shareBtn = document.createElement("button");
         shareBtn.className = "history-action-btn";
-        shareBtn.textContent = "Share";
+        shareBtn.textContent = "🔗 Share";
         shareBtn.onclick = (e) => {
             e.stopPropagation();
             shareChat(chat.id);
+            // Close menu after share completes
+            actionMenu.classList.remove("history-menu-open");
+            actionMenu.style.top = "";
+            actionMenu.style.left = "";
         };
-        
+
         const renameBtn = document.createElement("button");
         renameBtn.className = "history-action-btn";
-        renameBtn.textContent = "Rename";
+        renameBtn.textContent = "✏️ Rename";
         renameBtn.onclick = (e) => {
             e.stopPropagation();
             renameChat(chat.id);
+            // Close menu after rename completes
+            actionMenu.classList.remove("history-menu-open");
+            actionMenu.style.top = "";
+            actionMenu.style.left = "";
         };
-        
+
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "history-action-btn delete-btn";
-        deleteBtn.textContent = "Delete";
+        deleteBtn.textContent = "🗑️ Delete";
         deleteBtn.onclick = (e) => {
             e.stopPropagation();
             deleteChat(chat.id);
+            // Close menu after delete completes
+            actionMenu.classList.remove("history-menu-open");
+            actionMenu.style.top = "";
+            actionMenu.style.left = "";
         };
-        
+
         actionMenu.appendChild(shareBtn);
         actionMenu.appendChild(renameBtn);
         actionMenu.appendChild(deleteBtn);
-        
+
+        // Append menu to body so sidebar overflow never clips it
+        document.body.appendChild(actionMenu);
+
+        // Add mouseleave handler to action menu
+        actionMenu.addEventListener("mouseleave", () => {
+            startHistoryMenuCloseTimer();
+        });
+
+        // Add mouseenter handler to action menu
+        actionMenu.addEventListener("mouseenter", () => {
+            cancelHistoryMenuCloseTimer();
+        });
+
+        // --- STABLE CLOSE LOGIC ---
+        // Menu stays open while cursor is inside sidebar OR inside menu box.
+        // Uses document mousemove to check real-time cursor position.
+        // 12px buffer handles sub-pixel gaps between sidebar edge and menu.
+        let moveWatcher = null;
+
+        function startMoveWatcher() {
+            if (moveWatcher) return;
+            moveWatcher = function(e) {
+                const sidebar = document.getElementById("sidebar");
+                const sidebarRect = sidebar ? sidebar.getBoundingClientRect() : null;
+                const menuRect    = actionMenu.getBoundingClientRect();
+
+                // 12px buffer — covers any pixel gap between sidebar right edge and menu left edge
+                const BUFFER = 12;
+
+                const inSidebar = sidebarRect &&
+                    e.clientX >= sidebarRect.left - BUFFER &&
+                    e.clientX <= sidebarRect.right + BUFFER &&
+                    e.clientY >= sidebarRect.top - BUFFER &&
+                    e.clientY <= sidebarRect.bottom + BUFFER;
+
+                const inMenu =
+                    e.clientX >= menuRect.left - BUFFER &&
+                    e.clientX <= menuRect.right + BUFFER &&
+                    e.clientY >= menuRect.top - BUFFER &&
+                    e.clientY <= menuRect.bottom + BUFFER;
+
+                if (!inSidebar && !inMenu) {
+                    actionMenu.classList.remove("history-menu-open");
+                    actionMenu.style.top  = "";
+                    actionMenu.style.left = "";
+                    document.removeEventListener("mousemove", moveWatcher);
+                    moveWatcher = null;
+                }
+            };
+            document.addEventListener("mousemove", moveWatcher);
+        }
+
+        // Open/close menu on ⋮ click
+        menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+
+            const isOpen = actionMenu.classList.contains("history-menu-open");
+
+            // Close ALL open menus first using the global function
+            closeAllHistoryMenusGlobal();
+
+            if (!isOpen) {
+                // Cancel any pending close timer
+                cancelHistoryMenuCloseTimer();
+
+                const rect = menuBtn.getBoundingClientRect();
+                const sidebarEl = document.getElementById("sidebar");
+                const sidebarRight = sidebarEl ? sidebarEl.getBoundingClientRect().right : 260;
+
+                // Add class first so browser renders it and offsetWidth is readable
+                actionMenu.classList.add("history-menu-open");
+
+                // Half inside sidebar, half outside — center on sidebar right edge
+                const menuHalfWidth = actionMenu.offsetWidth / 2;
+                actionMenu.style.top = rect.top + "px";
+                actionMenu.style.left = (sidebarRight - menuHalfWidth) + "px";
+                startMoveWatcher();
+            } else {
+                if (moveWatcher) {
+                    document.removeEventListener("mousemove", moveWatcher);
+                    moveWatcher = null;
+                }
+            }
+        });
+
         historyItem.appendChild(titleSpan);
         historyItem.appendChild(menuBtn);
-        historyItem.appendChild(actionMenu);
-        
-        // Add click handler to load chat
+
+        // Add click handler to load chat (menuBtn click won't bubble here due to stopPropagation)
         historyItem.addEventListener("click", () => {
             loadChat(chat.id);
         });
-        
+
         historyList.appendChild(historyItem);
     });
     } catch (e) {
@@ -1282,6 +1414,12 @@ async function sendMessage() {
     // Save user message to chat history
     saveChatMessage(text, true);
 
+    // If history menu close timer is running (menu was opened), reset it to 15s
+    // so the menu stays visible for another 15 seconds after each new command
+    if (historyMenuCloseTimer) {
+        startHistoryMenuCloseTimer();
+    }
+
     const inputLang = detectLanguage(text);
     const uiLang = I18n.getLanguage();
 
@@ -1442,46 +1580,87 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
+    // SIDEBAR HOVER EXPAND
+    // =========================================
+
+    // Timer for delayed sidebar collapse (10 seconds after mouse leaves)
+    let sidebarCollapseTimer = null;
+
+    if (sidebar) {
+        sidebar.addEventListener("mouseenter", () => {
+            // Cancel any pending collapse timer when mouse re-enters
+            if (sidebarCollapseTimer) {
+                clearTimeout(sidebarCollapseTimer);
+                sidebarCollapseTimer = null;
+            }
+            sidebar.classList.add("sidebar-open");
+        });
+
+        sidebar.addEventListener("mouseleave", () => {
+            // Only collapse on hover-out if it was opened by hover (not by click-toggle)
+            if (!sidebar.dataset.clickOpened) {
+                // Wait 10 seconds before collapsing sidebar
+                if (sidebarCollapseTimer) clearTimeout(sidebarCollapseTimer);
+                sidebarCollapseTimer = setTimeout(() => {
+                    sidebar.classList.remove("sidebar-open");
+                    sidebarCollapseTimer = null;
+                }, 10000);
+            }
+        });
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (sidebar.classList.contains("sidebar-open") && sidebar.dataset.clickOpened) {
+                    // User is clicking to close
+                    delete sidebar.dataset.clickOpened;
+                    sidebar.classList.remove("sidebar-open");
+                } else {
+                    // User is clicking to pin open
+                    sidebar.dataset.clickOpened = "true";
+                    sidebar.classList.add("sidebar-open");
+                }
+            }, { capture: true });
+        }
+    }
+
+    // =========================================
     // HISTORY MENU
     // =========================================
 
-    function closeAllHistoryMenus() {
-
-        document.querySelectorAll(".history-action-menu").forEach(menu => {
-
-            menu.style.display = "none";
-
+    // Add mouseleave handler to sidebar
+    if (sidebar) {
+        sidebar.addEventListener("mouseleave", () => {
+            // Start timer when leaving sidebar (will be cancelled if mouse enters menu)
+            startHistoryMenuCloseTimer();
         });
 
+        sidebar.addEventListener("mouseenter", () => {
+            cancelHistoryMenuCloseTimer();
+        });
     }
-
-    // Event delegation for dynamically created history menu buttons
-    document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("history-menu-btn")) {
-            e.preventDefault();
-            e.stopPropagation();
-            const currentMenu = e.target.parentElement.querySelector(".history-action-menu");
-            if (!currentMenu) return;
-            
-            // Close all other open history menus first
-            closeAllHistoryMenus();
-            
-            // Toggle the menu open class
-            currentMenu.classList.toggle("history-menu-open");
-            
-            // Set popup position using getBoundingClientRect
-            const btnRect = e.target.getBoundingClientRect();
-            currentMenu.style.position = "fixed";
-            currentMenu.style.top = `${btnRect.bottom + 5}px`;
-            currentMenu.style.left = `${btnRect.left}px`;
-        }
-    });
 
     // =========================================
     // USER MENU
     // =========================================
 
     if (userMenuBtn && userMenuPanel) {
+
+        // Panel ને body માં move કરો જેથી sidebar overflow:hidden ક્યારેય clip ન કરે
+        if (userMenuPanel.parentElement !== document.body) {
+            document.body.appendChild(userMenuPanel);
+        }
+
+        // Panel ને button ની position ઉપર fixed/absolute રીતે set કરો
+        function positionUserMenuPanel() {
+            const rect = userMenuBtn.getBoundingClientRect();
+            userMenuPanel.style.position = "fixed";
+            userMenuPanel.style.zIndex   = "99999";
+            userMenuPanel.style.bottom   = (window.innerHeight - rect.top) + "px";
+            userMenuPanel.style.left     = rect.left + "px";
+            userMenuPanel.style.top      = "";
+            userMenuPanel.style.right    = "";
+        }
 
         userMenuBtn.addEventListener("click", (e) => {
 
@@ -1490,8 +1669,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const isVisible =
                 userMenuPanel.style.display === "block";
 
-            userMenuPanel.style.display =
-                isVisible ? "none" : "block";
+            if (!isVisible) {
+                positionUserMenuPanel();
+                userMenuPanel.style.display = "block";
+            } else {
+                userMenuPanel.style.display = "none";
+            }
 
         });
 
@@ -1502,17 +1685,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
 
     document.addEventListener("click", (e) => {
-        // Don't close if clicking on a history menu button
-        if (e.target.classList.contains("history-menu-btn")) return;
-        
-        closeAllHistoryMenus();
-
-        if (userMenuPanel) {
-
+        // History menus are handled by their own outside-click listener above
+        if (userMenuPanel &&
+            !e.target.closest("#user-menu-panel") &&
+            e.target !== userMenuPanel) {
             userMenuPanel.style.display = "none";
-
         }
-
     });
 
     // =========================================
@@ -1544,23 +1722,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         newChatBtn.addEventListener("click", () => {
 
-            // Generate new chat ID
-            currentChatId = "chat_" + Date.now();
-
-            // Save to localStorage
-            localStorage.setItem("currentChatId", currentChatId);
+            // Use proper createNewChat() to generate unique ID and register in history
+            const newChat = createNewChat();
+            if (!newChat) {
+                console.error("Failed to create new chat session");
+                return;
+            }
 
             // Clear chat box
             chatBox.innerHTML = "";
 
-            // Show welcome message only
+            // Show welcome message (UI-only, not saved — it's the greeting, not real content)
             const welcomeDiv = document.createElement("div");
-            welcomeDiv.className = "message ai";
-            welcomeDiv.innerHTML = `
-                <div class="message-content">
-                    <p>Jay Shree Ram! Welcome Parth, how can I help you today?</p>
-                </div>
-            `;
+            welcomeDiv.className = "message ai-message";
+            welcomeDiv.textContent = "Jay Shree Ram! Welcome Parth, how can I help you today?";
             chatBox.appendChild(welcomeDiv);
 
             console.log("New chat started with ID:", currentChatId);
@@ -1989,22 +2164,12 @@ window.addEventListener("load", function () {
 (function () {
     const sidebar = document.getElementById("sidebar");
 
-    function closeAllHistoryMenus() {
-        document.querySelectorAll(".history-action-menu").forEach((menu) => {
-            menu.classList.remove("history-menu-open");
-            menu.style.display = "";
-        });
-    }
-
     if (!sidebar) return;
 
-    sidebar.addEventListener("mouseleave", () => {
-        closeAllHistoryMenus();
-    });
-
+    // Instant-close all menus when sidebar is toggled closed via button
     const observer = new MutationObserver(() => {
         if (!sidebar.classList.contains("sidebar-open")) {
-            closeAllHistoryMenus();
+            closeAllHistoryMenusGlobal();
         }
     });
 
@@ -2014,233 +2179,228 @@ window.addEventListener("load", function () {
     });
 })();
 // =====================================================
-// FINAL STABLE CHAT HISTORY OVERRIDE
-// Fixes:
-// 1. Om/loading save issue
-// 2. New Chat separate session issue
-// 3. All chats saving in one chat issue
+// VOICE FEATURES
+// 1. Mic Mode     — speech-to-text into input box
+// 2. Listen       — female voice reads last AI message
+// 3. Story Mode   — toggles story-style answer prompt
+// 4. Suggestion   — toggles deep moral explanation mode
 // =====================================================
 
 (function () {
-    if (window.__stableHistoryOverrideLoaded) return;
-    window.__stableHistoryOverrideLoaded = true;
+    // ---------- STATE ----------
+    let micActive        = false;
+    let storyModeOn      = false;
+    let suggestionModeOn = false;
+    let recognition      = null;
+    let synth            = window.speechSynthesis;
 
-    const HISTORY_KEY = "spiritualChatHistory";
-    const ACTIVE_KEY = "currentChatId";
+    // ---------- HELPERS ----------
 
-    function readChats() {
-        try {
-            const data = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
-            return Array.isArray(data) ? data : [];
-        } catch {
-            return [];
+    function getFemaleVoice() {
+        const voices = synth.getVoices();
+        // Prefer a named female English voice
+        const preferred = voices.find(v =>
+            /female|woman|zira|susan|samantha|victoria|karen|moira|veena/i.test(v.name)
+        );
+        if (preferred) return preferred;
+        // Fallback: first en voice
+        return voices.find(v => v.lang.startsWith("en")) || voices[0] || null;
+    }
+
+    function speak(text) {
+        if (!synth) return;
+        synth.cancel();
+        const utter  = new SpeechSynthesisUtterance(text);
+        utter.rate   = 0.92;
+        utter.pitch  = 1.15;
+        utter.volume = 1;
+        const voice  = getFemaleVoice();
+        if (voice) utter.voice = voice;
+        synth.speak(utter);
+    }
+
+    function getLastAIMessage() {
+        const messages = document.querySelectorAll(".ai-message");
+        if (!messages.length) return null;
+        return messages[messages.length - 1].textContent.trim();
+    }
+
+    function setButtonActive(btn, active) {
+        if (!btn) return;
+        if (active) {
+            btn.classList.add("voice-btn-active");
+            btn.style.opacity = "1";
+            btn.style.filter  = "drop-shadow(0 0 6px #ffd700)";
+        } else {
+            btn.classList.remove("voice-btn-active");
+            btn.style.opacity = "";
+            btn.style.filter  = "";
         }
     }
 
-    function writeChats(chats) {
-        localStorage.setItem(HISTORY_KEY, JSON.stringify(chats.slice(0, 50)));
-    }
+    // ---------- MIC MODE — Speech to Text ----------
 
-    function makeId() {
-        return "chat_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    }
+    function initMicMode() {
+        const micBtn = document.getElementById("mic-btn");
+        if (!micBtn) return;
 
-    function isBadMessage(text) {
-        const clean = String(text || "").trim();
+        const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        if (clean.length < 2) return true;
-        if (clean === "ૐ..." || clean.includes("ૐ...")) return true;
-        if (clean.toLowerCase().includes("typing")) return true;
-        if (clean.toLowerCase().includes("loading")) return true;
-
-        return false;
-    }
-
-    function setActiveChat(id) {
-        localStorage.setItem(ACTIVE_KEY, id);
-    }
-
-    function getActiveChat() {
-        return localStorage.getItem(ACTIVE_KEY);
-    }
-
-    function createEmptySession() {
-        const newId = makeId();
-        setActiveChat(newId);
-
-        const chatBox = document.getElementById("chat-box");
-        if (chatBox) {
-            chatBox.innerHTML = `
-                <div class="message ai-message">
-                    Jay Shree Ram! Welcome Parth, how can I help you today?
-                </div>
-            `;
+        if (!SpeechRecognition) {
+            micBtn.title = "Speech recognition not supported in this browser";
+            micBtn.style.opacity = "0.4";
+            return;
         }
 
-        return newId;
-    }
+        recognition              = new SpeechRecognition();
+        recognition.continuous   = false;
+        recognition.interimResults = false;
+        recognition.lang         = "gu-IN"; // Gujarati primary; falls back gracefully
 
-    window.saveChatMessage = function (text, isUser = true) {
-        const clean = String(text || "").trim();
-
-        if (isBadMessage(clean)) return;
-
-        let chats = readChats();
-        let activeId = getActiveChat();
-
-        let chat = chats.find(c => c.id === activeId);
-
-        if (!chat) {
-            chat = {
-                id: activeId || makeId(),
-                title: isUser ? clean.slice(0, 35) : "New Chat",
-                messages: [],
-                createdAt: Date.now()
-            };
-
-            setActiveChat(chat.id);
-            chats.unshift(chat);
-        }
-
-        const sender = isUser ? "user" : "ai";
-        const last = chat.messages[chat.messages.length - 1];
-
-        if (last && last.sender === sender && last.text === clean) return;
-
-        chat.messages.push({
-            sender,
-            text: clean,
-            time: Date.now()
-        });
-
-        if (isUser && (!chat.title || chat.title === "New Chat")) {
-            chat.title = clean.slice(0, 35);
-        }
-
-        writeChats(chats);
-        renderStableHistory();
-    };
-
-    function renderStableHistory() {
-        const list = document.getElementById("history-list");
-        if (!list) return;
-
-        list.innerHTML = "";
-
-        readChats().forEach(chat => {
-            const item = document.createElement("div");
-            item.className = "history-item";
-
-            const title = document.createElement("span");
-            title.className = "history-title";
-            title.textContent = chat.title || "New Chat";
-
-            item.appendChild(title);
-            list.appendChild(item);
-
-            item.addEventListener("click", () => {
-                setActiveChat(chat.id);
-
-                const chatBox = document.getElementById("chat-box");
-                if (!chatBox) return;
-
-                chatBox.innerHTML = "";
-
-                chat.messages.forEach(msg => {
-                    if (isBadMessage(msg.text)) return;
-
-                    const div = document.createElement("div");
-                    div.className =
-                        msg.sender === "user"
-                            ? "message user-message"
-                            : "message ai-message";
-
-                    div.textContent = msg.text;
-                    chatBox.appendChild(div);
-                });
-            });
-        });
-    }
-
-    function hookNewChat() {
-        const newChatBtn = document.getElementById("new-chat-btn");
-
-        if (!newChatBtn) return;
-
-        newChatBtn.onclick = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            createEmptySession();
-
-            console.log("New clean chat session started");
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            const input = document.getElementById("user-input");
+            if (input) {
+                input.value += (input.value ? " " : "") + transcript;
+                input.focus();
+            }
+            micActive = false;
+            setButtonActive(micBtn, false);
         };
+
+        recognition.onerror = () => {
+            micActive = false;
+            setButtonActive(micBtn, false);
+        };
+
+        recognition.onend = () => {
+            if (micActive) {
+                // If still active, re-start (user held mic on)
+                try { recognition.start(); } catch (e) { /* ignore */ }
+            }
+        };
+
+        micBtn.addEventListener("click", () => {
+            if (!micActive) {
+                micActive = true;
+                setButtonActive(micBtn, true);
+                try { recognition.start(); } catch (e) {
+                    micActive = false;
+                    setButtonActive(micBtn, false);
+                }
+            } else {
+                micActive = false;
+                setButtonActive(micBtn, false);
+                try { recognition.stop(); } catch (e) { /* ignore */ }
+            }
+        });
     }
 
-    function observeChatBox() {
+    // ---------- LISTEN — Read Last AI Message ----------
+
+    function initListenMode() {
+        const listenBtn = document.getElementById("listen-btn");
+        if (!listenBtn) return;
+
+        if (!synth) {
+            listenBtn.title   = "Speech synthesis not supported";
+            listenBtn.style.opacity = "0.4";
+            return;
+        }
+
+        // Ensure voices are loaded
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = () => {};
+        }
+
+        listenBtn.addEventListener("click", () => {
+            if (synth.speaking) {
+                synth.cancel();
+                setButtonActive(listenBtn, false);
+                return;
+            }
+            const text = getLastAIMessage();
+            if (!text) return;
+            setButtonActive(listenBtn, true);
+            speak(text);
+
+            // Reset button when done
+            const check = setInterval(() => {
+                if (!synth.speaking) {
+                    setButtonActive(listenBtn, false);
+                    clearInterval(check);
+                }
+            }, 500);
+        });
+    }
+
+    // ---------- STORY MODE — Story-style answers ----------
+
+    function initStoryMode() {
+        const storyBtn = document.getElementById("story-btn");
+        if (!storyBtn) return;
+
+        storyBtn.addEventListener("click", () => {
+            storyModeOn = !storyModeOn;
+            setButtonActive(storyBtn, storyModeOn);
+            // Expose flag globally so sendMessage() can read it
+            window.voiceStoryMode = storyModeOn;
+            console.log("Story mode:", storyModeOn ? "ON" : "OFF");
+        });
+    }
+
+    // ---------- SUGGESTION MODE — Deep moral explanation ----------
+
+    function initSuggestionMode() {
+        const suggestionBtn = document.getElementById("suggestion-btn");
+        if (!suggestionBtn) return;
+
+        suggestionBtn.addEventListener("click", () => {
+            suggestionModeOn = !suggestionModeOn;
+            setButtonActive(suggestionBtn, suggestionModeOn);
+            // Expose flag globally so sendMessage() can read it
+            window.voiceSuggestionMode = suggestionModeOn;
+            console.log("Suggestion mode:", suggestionModeOn ? "ON" : "OFF");
+        });
+    }
+
+    // ---------- INIT ON DOM READY ----------
+
+    function init() {
+        initMicMode();
+        initListenMode();
+        initStoryMode();
+        initSuggestionMode();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
+})();
+
+// =====================================================
+// AUTO-SCROLL: Always scroll to latest message
+// =====================================================
+(function() {
+    // Wait for DOM before attaching observer
+    function attachAutoScroll() {
         const chatBox = document.getElementById("chat-box");
-
         if (!chatBox) return;
-        if (chatBox.dataset.stableObserverAttached) return;
-
-        chatBox.dataset.stableObserverAttached = "true";
 
         const observer = new MutationObserver(() => {
-            const messages = chatBox.querySelectorAll(".message");
-
-            messages.forEach(msg => {
-                if (msg.dataset.historySaved === "true") return;
-
-                const text = msg.textContent.trim();
-
-                if (isBadMessage(text)) return;
-
-                msg.dataset.historySaved = "true";
-
-                if (msg.classList.contains("user-message")) {
-                    window.saveChatMessage(text, true);
-                }
-
-                if (msg.classList.contains("ai-message")) {
-                    window.saveChatMessage(text, false);
-                }
-            });
+            // Always scroll to bottom on any chat content change
+            chatBox.scrollTop = chatBox.scrollHeight;
         });
 
-        observer.observe(chatBox, {
-            childList: true,
-            subtree: true
-        });
+        observer.observe(chatBox, { childList: true, subtree: true });
     }
 
-    window.addEventListener("load", () => {
-        localStorage.removeItem("spiritual_chat_history");
-        localStorage.removeItem("spiritual_active_chat_id");
-        localStorage.removeItem("spiritual_chats_v1");
-
-        renderStableHistory();
-        hookNewChat();
-        observeChatBox();
-
-        if (!getActiveChat()) {
-            createEmptySession();
-        }
-
-        console.log("Stable history override active");
-    });
-})();   
-// Smart auto-scroll: only scroll to bottom if user is already near bottom
-(function() {
-    const chatBox = document.getElementById("chat-box");
-    if (!chatBox) return;
-
-    const observer = new MutationObserver(() => {
-        const threshold = 150;
-        const isNearBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < threshold;
-        if (isNearBottom) {
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    });
-
-    observer.observe(chatBox, { childList: true, subtree: true });
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", attachAutoScroll);
+    } else {
+        attachAutoScroll();
+    }
 })();
