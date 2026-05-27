@@ -1,8 +1,5 @@
 // ============================================================
 // FIREBASE AUTH — Google + Facebook Login
-// Fixed: removed backtick syntax errors, added Firebase init,
-//        added handleGoogleLogin, handleFacebookLogin functions,
-//        added auth state listener, added spiritual-auth-success event
 // ============================================================
 
 const firebaseConfig = {
@@ -26,21 +23,23 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 function clearSafeUserProfile() {
     try {
         localStorage.removeItem("spiritualUserProfile");
+        localStorage.removeItem("profilePhoto");
     } catch (error) {
         console.warn("Could not clear user profile cache:", error);
     }
 }
 
-// ── Helper: show/hide error message ─────────────────────────
+// ── Helper: show login error ─────────────────────────────────
 function showLoginError(message) {
     const errorBox = document.getElementById("login-error");
     if (!errorBox) return;
     errorBox.textContent = message || "";
-    // Auto-clear after 6 seconds
-    setTimeout(() => { if (errorBox) errorBox.textContent = ""; }, 6000);
+    if (message) {
+        setTimeout(() => { if (errorBox) errorBox.textContent = ""; }, 6000);
+    }
 }
 
-// ── Helper: friendly error messages in Gujarati ─────────────
+// ── Helper: friendly error messages (Gujarati) ───────────────
 function getFriendlyAuthError(error, providerName) {
     if (!error || !error.code) return `${providerName} login failed. ફરી try કર.`;
     switch (error.code) {
@@ -113,42 +112,121 @@ async function handleFacebookLogin() {
     }
 }
 
-// ── Auth State Listener ──────────────────────────────────────
+// ── Unified: update ALL user-facing UI from a Firebase user ──
+// Called on login and on page load (from auth state listener).
+// Also called after profile photo upload to refresh avatars.
+function updateAllUserUI(user) {
+    if (!user) return;
+
+    const email       = user.email || "";
+    const displayName = user.displayName || "";
+    const source      = displayName || email || "User";
+    const initial     = source.charAt(0).toUpperCase();
+
+    // Build a clean display name: strip ".com" artifact from email-as-name
+    let cleanName = displayName || email || "User";
+    cleanName = cleanName.replace(/\.com$/i, "");
+
+    // Saved profile photo (uploaded by user, persisted in localStorage)
+    const savedPhoto = localStorage.getItem("profilePhoto");
+
+    // ── Top bar user profile ──────────────────────────────────
+    const userPhoto  = document.getElementById("user-photo");
+    const userName   = document.getElementById("user-name");
+    const userEmail  = document.getElementById("user-email");
+
+    if (userPhoto)  userPhoto.src = savedPhoto || user.photoURL || "";
+    if (userName)   userName.textContent = cleanName;
+    if (userEmail)  userEmail.textContent = email;
+
+    // ── Sidebar user section ──────────────────────────────────
+    const sidebarInitial = document.getElementById("sidebar-user-initial");
+    const sidebarName    = document.getElementById("sidebar-user-name");
+    const sidebarEmail   = document.getElementById("sidebar-user-email");
+
+    if (sidebarInitial) {
+        if (savedPhoto) {
+            sidebarInitial.innerHTML = `<img src="${savedPhoto}" alt="User photo"
+                style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+            sidebarInitial.textContent = initial;
+        }
+    }
+    if (sidebarName)  sidebarName.textContent  = cleanName;
+    if (sidebarEmail) sidebarEmail.textContent  = email || "No email found";
+
+    // ── Profile modal ─────────────────────────────────────────
+    const profileAvatar  = document.getElementById("profile-avatar");
+    const modalEmailEl   = document.getElementById("profile-modal-email");
+    const modalNameEl    = document.getElementById("profile-modal-name");
+
+    if (profileAvatar) {
+        if (savedPhoto) {
+            profileAvatar.innerHTML = `<img src="${savedPhoto}" alt="Profile photo"
+                style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        } else {
+            profileAvatar.textContent = initial;
+        }
+    }
+    if (modalEmailEl) modalEmailEl.textContent = email || "No email found";
+    if (modalNameEl)  modalNameEl.textContent  = cleanName;
+}
+
+// ── Profile photo upload (called from your profile modal HTML) ─
+// Example: <input type="file" id="profile-photo-input" accept="image/*">
+function initProfilePhotoUpload() {
+    const input = document.getElementById("profile-photo-input");
+    if (!input) return;
+
+    input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+            try {
+                localStorage.setItem("profilePhoto", dataUrl);
+            } catch (err) {
+                console.warn("Could not save profile photo:", err);
+            }
+            // Refresh all avatars immediately
+            const user = auth.currentUser;
+            if (user) updateAllUserUI(user);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// ── Single Auth State Listener ───────────────────────────────
 auth.onAuthStateChanged((user) => {
     const loginScreen = document.getElementById("login-screen");
-    const mainContent  = document.getElementById("main-content");
-    const userProfile  = document.getElementById("user-profile");
-    const userPhoto    = document.getElementById("user-photo");
-    const userName     = document.getElementById("user-name");
-    const userEmail    = document.getElementById("user-email");
+    const mainContent = document.getElementById("main-content");
+    const userProfile = document.getElementById("user-profile");
 
     if (user) {
         // Show main website
         if (loginScreen) loginScreen.style.display = "none";
         if (mainContent)  mainContent.classList.remove("auth-hidden");
+        if (userProfile)  userProfile.style.display = "flex";
 
-        // Show user profile bar
-        if (userProfile) userProfile.style.display = "flex";
-        if (userPhoto)   userPhoto.src = user.photoURL || "";
-        if (userName)    userName.textContent = user.displayName || user.email || "User";
-        if (userEmail)   userEmail.textContent = user.email || "";
+        // Update all UI elements with user data
+        updateAllUserUI(user);
 
-        // Signal to script.js that auth succeeded — starts flute music
+        // Signal to script.js that auth succeeded (starts flute music, etc.)
         window.dispatchEvent(new CustomEvent("spiritual-auth-success"));
 
-        // Update sidebar user menu with logged-in user data
-        updateSidebarUserMenu(user);
-
     } else {
-        // Show login screen
+        // Show login screen, hide content
         if (loginScreen) loginScreen.style.display = "flex";
         if (mainContent)  mainContent.classList.add("auth-hidden");
-        if (userProfile) userProfile.style.display = "none";
+        if (userProfile)  userProfile.style.display = "none";
+
         clearSafeUserProfile();
     }
 });
 
-// ── Logout ───────────────────────────────────────────────────
+// ── Wire up buttons on DOM ready ─────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
     const googleBtn   = document.getElementById("google-login-btn");
     const facebookBtn = document.getElementById("facebook-login-btn");
@@ -160,96 +238,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutBtn) {
         logoutBtn.addEventListener("click", async () => {
             try {
-                await auth.signOut();
+                clearSafeUserProfile();   // Clear photo + profile cache first
+                await auth.signOut();     // Firebase sign-out triggers listener above
             } catch (error) {
                 console.error("Logout error:", error);
             }
         });
     }
+
+    // Set up profile photo upload if the input exists in this page
+    initProfilePhotoUpload();
 });
-// =========================================
-// SIDEBAR USER DATA AFTER LOGIN
-// =========================================
-
-function updateSidebarUserProfile(user) {
-    if (!user) return;
-
-    const sidebarUserInitial = document.getElementById("sidebar-user-initial");
-    const sidebarUserName = document.getElementById("sidebar-user-name");
-    const sidebarUserEmail = document.getElementById("sidebar-user-email");
-
-    const email = user.email || "";
-    const displayName = user.displayName || "";
-
-    let cleanName = displayName;
-
-    if (!cleanName && email) {
-        cleanName = email.replace(".com", "");
-    }
-
-    const firstLetterSource = displayName || email || "U";
-    const firstLetter = firstLetterSource.charAt(0).toUpperCase();
-
-    if (sidebarUserInitial) {
-        sidebarUserInitial.textContent = firstLetter;
-    }
-
-    if (sidebarUserName) {
-        sidebarUserName.textContent = cleanName || "User";
-    }
-
-    if (sidebarUserEmail) {
-        sidebarUserEmail.textContent = email || "No email found";
-    }
-}
-
-// Patch existing Firebase auth state listener safely
-if (typeof auth !== "undefined") {
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            updateSidebarUserProfile(user);
-        }
-    });
-}
-// =========================================
-// UPDATE SIDEBAR USER MENU FROM FIREBASE USER
-// =========================================
-function updateSidebarUserMenu(user) {
-    if (!user) return;
-
-    const initialEl = document.getElementById("sidebar-user-initial");
-    const nameEl = document.getElementById("sidebar-user-name");
-    const emailEl = document.getElementById("sidebar-user-email");
-    const modalEmailEl = document.getElementById("profile-modal-email");
-    const profileAvatar = document.getElementById("profile-avatar");
-
-    const email = user.email || "";
-    const displayName = user.displayName || "";
-    const source = displayName || email || "User";
-    const initial = source.charAt(0).toUpperCase();
-
-    let cleanName = displayName || email || "User";
-    cleanName = cleanName.replace(".com", "");
-
-    const savedPhoto = localStorage.getItem("profilePhoto");
-
-    if (initialEl) {
-        if (savedPhoto) {
-            initialEl.innerHTML = `<img src="${savedPhoto}" alt="User photo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-        } else {
-            initialEl.textContent = initial;
-        }
-    }
-
-    if (profileAvatar) {
-        if (savedPhoto) {
-            profileAvatar.innerHTML = `<img src="${savedPhoto}" alt="Profile photo">`;
-        } else {
-            profileAvatar.textContent = initial;
-        }
-    }
-
-    if (nameEl) nameEl.textContent = cleanName;
-    if (emailEl) emailEl.textContent = email || "No email found";
-    if (modalEmailEl) modalEmailEl.textContent = email || "No email found";
-}

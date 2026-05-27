@@ -9,6 +9,81 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali&family=Noto+Sans+Devanagari&family=Noto+Sans+Gurmukhi&family=Noto+Sans+Kannada&family=Noto+Sans+Malayalam&family=Noto+Sans+Oriya&family=Noto+Sans+Tamil&family=Noto+Sans+Telugu&family=Noto+Sans+Arabic&family=Noto+Sans+Ol+Chiki&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Username section in profile modal ── */
+        .username-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            margin-top: 4px;
+        }
+        .profile-modal-name {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        .change-username-btn {
+            background: none;
+            border: 1.5px solid #c8960c;
+            color: #c8960c;
+            border-radius: 20px;
+            padding: 5px 16px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.18s, color 0.18s;
+        }
+        .change-username-btn:hover {
+            background: #c8960c;
+            color: #fff;
+        }
+        .username-edit-box {
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        .username-input {
+            width: 90%;
+            padding: 8px 12px;
+            border: 1.5px solid #c8960c;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            text-align: center;
+            background: #fffdf5;
+        }
+        .username-edit-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .save-username-btn {
+            background: #c8960c;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 20px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.18s;
+        }
+        .save-username-btn:hover { background: #a87a08; }
+        .cancel-username-btn {
+            background: #eee;
+            color: #555;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+        .cancel-username-btn:hover { background: #ddd; }
+    </style>
 </head>
 
 <body>
@@ -156,9 +231,17 @@
           user@email.com
         </p>
 
-        <div class="profile-language-box">
-          <label for="profile-language-select">Select Language</label>
-          <div id="profile-language-holder"></div>
+        <!-- Change Username -->
+        <div id="username-section" class="username-section">
+          <p id="profile-modal-name" class="profile-modal-name">User</p>
+          <button id="change-username-btn" class="change-username-btn" type="button">✏️ Change Username</button>
+          <div id="username-edit-box" class="username-edit-box" style="display:none;">
+            <input type="text" id="username-input" class="username-input" placeholder="Enter new username" maxlength="40">
+            <div class="username-edit-actions">
+              <button id="save-username-btn" class="save-username-btn" type="button">Save</button>
+              <button id="cancel-username-btn" class="cancel-username-btn" type="button">Cancel</button>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -170,6 +253,54 @@
     <script src="i18n.js"></script>
     <script src="script.js"></script>
 <script>
+// ── Change Username Logic ────────────────────────────────────
+window.addEventListener("load", function () {
+    const changeBtn     = document.getElementById("change-username-btn");
+    const editBox       = document.getElementById("username-edit-box");
+    const usernameInput = document.getElementById("username-input");
+    const saveBtn       = document.getElementById("save-username-btn");
+    const cancelBtn     = document.getElementById("cancel-username-btn");
+    const nameDisplay   = document.getElementById("profile-modal-name");
+    const sidebarName   = document.getElementById("sidebar-user-name");
+
+    if (changeBtn && editBox) {
+        // Load saved username if exists
+        const saved = localStorage.getItem("customUsername");
+        if (saved) {
+            if (nameDisplay) nameDisplay.textContent = saved;
+            if (sidebarName) sidebarName.textContent = saved;
+        }
+
+        changeBtn.addEventListener("click", function () {
+            editBox.style.display = "flex";
+            if (usernameInput) usernameInput.value = nameDisplay ? nameDisplay.textContent : "";
+            if (usernameInput) usernameInput.focus();
+            changeBtn.style.display = "none";
+        });
+
+        if (saveBtn) saveBtn.addEventListener("click", function () {
+            const newName = usernameInput.value.trim();
+            if (!newName) return;
+            localStorage.setItem("customUsername", newName);
+            if (nameDisplay) nameDisplay.textContent = newName;
+            if (sidebarName) sidebarName.textContent = newName;
+            editBox.style.display = "none";
+            changeBtn.style.display = "inline-flex";
+        });
+
+        if (cancelBtn) cancelBtn.addEventListener("click", function () {
+            editBox.style.display = "none";
+            changeBtn.style.display = "inline-flex";
+        });
+
+        if (usernameInput) usernameInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter")  saveBtn && saveBtn.click();
+            if (e.key === "Escape") cancelBtn && cancelBtn.click();
+        });
+    }
+});
+
+// ── User Menu Toggle ─────────────────────────────────────────
 window.addEventListener("load", function () {
 
     const btn =
@@ -214,4 +345,3 @@ window.addEventListener("load", function () {
 </body>
 
 </html>
-
