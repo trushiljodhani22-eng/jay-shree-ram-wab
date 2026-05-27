@@ -2229,3 +2229,18 @@ window.addEventListener("load", function () {
         console.log("Stable history override active");
     });
 })();   
+// Smart auto-scroll: only scroll to bottom if user is already near bottom
+(function() {
+    const chatBox = document.getElementById("chat-box");
+    if (!chatBox) return;
+
+    const observer = new MutationObserver(() => {
+        const threshold = 150;
+        const isNearBottom = chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < threshold;
+        if (isNearBottom) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    });
+
+    observer.observe(chatBox, { childList: true, subtree: true });
+})();
