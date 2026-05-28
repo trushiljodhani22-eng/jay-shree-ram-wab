@@ -820,7 +820,12 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 999999;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+.login-screen::-webkit-scrollbar {
+    display: none;
 }
 
 .login-wrapper {
@@ -1155,4 +1160,8 @@ body {
 
 .sidebar {
     overflow-y: auto !important;
+}
+.auth-container ~ .sidebar,
+.login-container ~ .sidebar {
+    overflow: hidden !important;
 }
