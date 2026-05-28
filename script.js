@@ -1377,10 +1377,10 @@ function detectLanguage(text) {
 }
 
 function getChatResponseName(uiLang, inputLang) {
-    if (uiLang === "gu" || inputLang === "gu") {
-        return currentTitle === USER_NAME ? "પાર્થ" : currentTitle;
-    }
-    return USER_NAME;
+    const lang = uiLang !== "en" ? uiLang : inputLang;
+    if (lang === "gu") return currentTitle === USER_NAME ? "પાર્થ" : currentTitle;
+    if (lang === "hi") return currentTitle === USER_NAME ? "पार्थ" : currentTitle;
+    return currentTitle || USER_NAME;
 }
 
 function appendMessage(text, className, i18nMeta) {
@@ -1431,11 +1431,13 @@ async function sendMessage() {
     setTimeout(async () => {
         loadingDiv.remove();
         const useGu = uiLang === "gu" || inputLang === "gu";
+        const useHi = uiLang === "hi" || inputLang === "hi";
         const name = getChatResponseName(uiLang, inputLang);
-        const responseLang = useGu ? "gu" : uiLang;
-        await I18n.ensureLocale(responseLang);
-        const responseKey = useGu ? "chatResponseGu" : "chatResponse";
-        let response = I18n.t(responseKey, { name }, responseLang);
+        const responseLang = useGu ? "gu" : (useHi ? "hi" : uiLang);
+        const localePack = await I18n.ensureLocale(responseLang);
+        const responseKey = useGu ? "chatResponseGu" : (useHi ? "chatResponseHi" : "chatResponse");
+        const rawResponse = localePack[responseKey] || localePack["chatResponse"] || "Jay Shree Ram {name}!";
+        let response = rawResponse.replace(/\{name\}/g, name);
 
         if (shouldUseBadgeTitle()) {
             const badgeTitle = getHighestBadgeTitle(responseLang);
@@ -1732,10 +1734,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // Clear chat box
             chatBox.innerHTML = "";
 
-            // Show welcome message (UI-only, not saved — it's the greeting, not real content)
+            // Show welcome message using current language (UI-only, not saved)
             const welcomeDiv = document.createElement("div");
             welcomeDiv.className = "message ai-message";
-            welcomeDiv.textContent = "Jay Shree Ram! Welcome Parth, how can I help you today?";
+            const lang = I18n.getLanguage();
+            const welcomeName = I18n.displayName(lang);
+            welcomeDiv.textContent = I18n.t("welcome", { name: welcomeName }, lang);
             chatBox.appendChild(welcomeDiv);
 
             console.log("New chat started with ID:", currentChatId);
@@ -2300,7 +2304,7 @@ window.addEventListener("load", function () {
     // ---------- LISTEN — Read Last AI Message ----------
 
     function initListenMode() {
-        const listenBtn = document.getElementById("listen-btn");
+        const listenBtn = document.getElementById("speak-btn") || document.getElementById("listen-btn");
         if (!listenBtn) return;
 
         if (!synth) {
@@ -2338,7 +2342,7 @@ window.addEventListener("load", function () {
     // ---------- STORY MODE — Story-style answers ----------
 
     function initStoryMode() {
-        const storyBtn = document.getElementById("story-btn");
+        const storyBtn = document.getElementById("send-story-btn") || document.getElementById("story-btn");
         if (!storyBtn) return;
 
         storyBtn.addEventListener("click", () => {
@@ -2353,7 +2357,7 @@ window.addEventListener("load", function () {
     // ---------- SUGGESTION MODE — Deep moral explanation ----------
 
     function initSuggestionMode() {
-        const suggestionBtn = document.getElementById("suggestion-btn");
+        const suggestionBtn = document.getElementById("send-suggestion-btn") || document.getElementById("suggestion-btn");
         if (!suggestionBtn) return;
 
         suggestionBtn.addEventListener("click", () => {

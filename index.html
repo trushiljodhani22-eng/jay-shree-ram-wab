@@ -83,6 +83,178 @@
             cursor: pointer;
         }
         .cancel-username-btn:hover { background: #ddd; }
+
+        /* ═══════════════════════════════════════════════════════
+           [NEW] Translation Modal Styles
+           (copied & adapted from File 2 — no existing styles changed)
+           ═══════════════════════════════════════════════════════ */
+        .translate-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.72);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .translate-modal-overlay.open {
+            display: flex;
+        }
+        .translate-modal-card {
+            background: #2a1500;
+            border: 1px solid #c8960c44;
+            border-radius: 16px;
+            padding: 28px 24px 22px;
+            width: 95%;
+            max-width: 520px;
+            position: relative;
+            box-shadow: 0 8px 40px #0009;
+            font-family: 'Georgia', serif;
+            color: #f5e6c8;
+        }
+        .translate-modal-title {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #f5c842;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+        .translate-modal-subtitle {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #c8960c88;
+            margin-bottom: 18px;
+        }
+        .translate-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #f5c842;
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        .tm-label {
+            font-size: 0.75rem;
+            color: #c8960c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 7px;
+        }
+        .tm-presets {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .tm-preset-btn {
+            background: #1a0a00;
+            border: 1px solid #c8960c44;
+            color: #c8960c;
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .tm-preset-btn:hover {
+            background: #c8960c22;
+            border-color: #c8960c;
+            color: #f5c842;
+        }
+        .tm-textarea {
+            width: 100%;
+            background: #120800;
+            border: 1px solid #c8960c55;
+            border-radius: 8px;
+            color: #f5e6c8;
+            font-size: 0.97rem;
+            padding: 11px;
+            resize: vertical;
+            min-height: 75px;
+            font-family: inherit;
+            outline: none;
+            margin-bottom: 13px;
+        }
+        .tm-textarea:focus { border-color: #f5c842; }
+        .tm-lang-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .tm-btn-gu {
+            background: #c8960c;
+            color: #1a0a00;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 20px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .tm-btn-gu:hover { background: #f5c842; }
+        .tm-btn-hi {
+            background: #e05a00;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 20px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        .tm-btn-hi:hover { background: #ff7722; }
+        .tm-btn-gu:disabled,
+        .tm-btn-hi:disabled { opacity: 0.5; cursor: not-allowed; }
+        .tm-result-box {
+            margin-top: 12px;
+            background: #0d0500;
+            border-radius: 8px;
+            border-left: 3px solid #c8960c;
+            padding: 13px 15px;
+            min-height: 46px;
+            font-size: 1rem;
+            line-height: 1.6;
+            display: none;
+        }
+        .tm-result-box.show { display: block; }
+        .tm-result-lang {
+            font-size: 0.7rem;
+            color: #c8960c;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .tm-result-text { color: #f5e6c8; }
+        .tm-spinner {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #c8960c44;
+            border-top-color: #f5c842;
+            border-radius: 50%;
+            animation: tmSpin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 7px;
+        }
+        @keyframes tmSpin { to { transform: rotate(360deg); } }
+        .tm-error { color: #ff6b6b; font-size: 0.85rem; }
+        .tm-accuracy-note {
+            font-size: 0.72rem;
+            color: #c8960c77;
+            margin-top: 8px;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -90,6 +262,7 @@
 
     <!-- =========================================
          LOGIN SCREEN
+         [PRESERVED — untouched from File 1]
     ========================================= -->
     <div id="login-screen" class="login-screen">
         <div class="login-wrapper">
@@ -114,6 +287,7 @@
 
     <!-- =========================================
          SIDEBAR
+         [PRESERVED — only added 1 new button below Books btn]
     ========================================= -->
     <aside id="sidebar" class="sidebar">
 
@@ -139,6 +313,12 @@
         <button id="books-btn" class="sidebar-btn" type="button" title="Books">
             <span class="sidebar-icon">📚</span>
             <span class="sidebar-label">Books</span>
+        </button>
+
+        <!-- [NEW] Translate Button — added after Books, before divider -->
+        <button id="translate-btn" class="sidebar-btn" type="button" title="Translate">
+            <span class="sidebar-icon">🌐</span>
+            <span class="sidebar-label">Translate</span>
         </button>
 
         <!-- Divider -->
@@ -197,6 +377,7 @@
 
     <!-- =========================================
          MAIN CONTENT
+         [PRESERVED — untouched from File 1]
     ========================================= -->
     <div id="main-content" class="auth-hidden">
 
@@ -251,6 +432,7 @@
 
     <!-- =========================================
          PROFILE MODAL
+         [PRESERVED — untouched from File 1]
     ========================================= -->
     <div id="profile-modal" class="profile-modal">
         <div class="profile-card">
@@ -292,7 +474,52 @@
     </div>
 
     <!-- =========================================
+         [NEW] TRANSLATION MODAL
+         (Entire UI from File 2 — placed as overlay modal)
+    ========================================= -->
+    <div id="translate-modal-overlay" class="translate-modal-overlay" role="dialog" aria-modal="true" aria-label="Translation Tool">
+        <div class="translate-modal-card">
+
+            <!-- Close -->
+            <button id="translate-modal-close" class="translate-modal-close" type="button" aria-label="Close">×</button>
+
+            <h2 class="translate-modal-title">🌐 Translation Tool</h2>
+            <p class="translate-modal-subtitle">MyMemory API — Free, No Key Required</p>
+
+            <!-- Presets -->
+            <span class="tm-label">Test Sentences (Presets)</span>
+            <div class="tm-presets">
+                <button class="tm-preset-btn" data-preset="Jay Shree Ram! How can I help you?">Jay Shree Ram greeting</button>
+                <button class="tm-preset-btn" data-preset="What is the meaning of Ramayana?">Ramayana meaning</button>
+                <button class="tm-preset-btn" data-preset="Lord Hanuman is the devotee of Ram.">Hanuman devotee</button>
+                <button class="tm-preset-btn" data-preset="Please tell me a spiritual story.">Spiritual story</button>
+                <button class="tm-preset-btn" data-preset="How to do meditation?">Meditation</button>
+            </div>
+
+            <!-- Input -->
+            <span class="tm-label">English Text</span>
+            <textarea id="tm-input-text" class="tm-textarea"
+                placeholder="Type English text here...">Jay Shree Ram! Welcome, how can I help you?</textarea>
+
+            <!-- Lang Buttons -->
+            <div class="tm-lang-btns">
+                <button class="tm-btn-gu" id="tm-btn-gu">ગુજરાતી માં Translate કરો</button>
+                <button class="tm-btn-hi" id="tm-btn-hi">हिन्दी में Translate करो</button>
+            </div>
+
+            <!-- Result -->
+            <div class="tm-result-box" id="tm-result-box">
+                <div class="tm-result-lang" id="tm-result-lang"></div>
+                <div class="tm-result-text" id="tm-result-text"></div>
+            </div>
+            <p class="tm-accuracy-note" id="tm-accuracy-note"></p>
+
+        </div>
+    </div>
+
+    <!-- =========================================
          FIREBASE & SCRIPTS
+         [PRESERVED — untouched from File 1]
     ========================================= -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -302,6 +529,7 @@
 
     <script>
     // ── Change Username Logic ────────────────────────────────
+    // [PRESERVED — untouched from File 1]
     window.addEventListener("load", function () {
         const changeBtn     = document.getElementById("change-username-btn");
         const editBox       = document.getElementById("username-edit-box");
@@ -351,6 +579,7 @@
     });
 
     // ── User Menu Toggle ─────────────────────────────────────
+    // [PRESERVED — untouched from File 1]
     window.addEventListener("load", function () {
         const btn   = document.getElementById("user-menu-btn");
         const panel = document.getElementById("user-menu-panel");
@@ -373,6 +602,118 @@
         panel.onclick = function (e) {
             e.stopPropagation();
         };
+    });
+
+    // ── [NEW] Translation Modal Logic ────────────────────────
+    // (Full logic from File 2 — adapted for modal, no existing code changed)
+    window.addEventListener("load", function () {
+
+        const translateBtn    = document.getElementById("translate-btn");
+        const overlay         = document.getElementById("translate-modal-overlay");
+        const closeBtn        = document.getElementById("translate-modal-close");
+
+        // Open modal
+        if (translateBtn && overlay) {
+            translateBtn.addEventListener("click", function () {
+                overlay.classList.add("open");
+            });
+        }
+
+        // Close modal — close button
+        if (closeBtn && overlay) {
+            closeBtn.addEventListener("click", function () {
+                overlay.classList.remove("open");
+            });
+        }
+
+        // Close modal — click outside card
+        if (overlay) {
+            overlay.addEventListener("click", function (e) {
+                if (e.target === overlay) {
+                    overlay.classList.remove("open");
+                }
+            });
+        }
+
+        // Close modal — Escape key
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && overlay) {
+                overlay.classList.remove("open");
+            }
+        });
+
+        // Preset buttons (from File 2 — prefixed with tm- to avoid ID conflicts)
+        document.querySelectorAll(".tm-preset-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                var input = document.getElementById("tm-input-text");
+                var resultBox = document.getElementById("tm-result-box");
+                var note = document.getElementById("tm-accuracy-note");
+                if (input) input.value = btn.getAttribute("data-preset");
+                if (resultBox) resultBox.classList.remove("show");
+                if (note) note.textContent = "";
+            });
+        });
+
+        // Translate buttons
+        var btnGu = document.getElementById("tm-btn-gu");
+        var btnHi = document.getElementById("tm-btn-hi");
+        if (btnGu) btnGu.addEventListener("click", function () { doTranslate("gu"); });
+        if (btnHi) btnHi.addEventListener("click", function () { doTranslate("hi"); });
+
+        // Core translate function (from File 2 — all logic preserved exactly)
+        async function doTranslate(targetLang) {
+            var text = document.getElementById("tm-input-text");
+            if (!text || !text.value.trim()) return;
+            text = text.value.trim();
+
+            var btnGuEl    = document.getElementById("tm-btn-gu");
+            var btnHiEl    = document.getElementById("tm-btn-hi");
+            var resultBox  = document.getElementById("tm-result-box");
+            var resultLang = document.getElementById("tm-result-lang");
+            var resultText = document.getElementById("tm-result-text");
+            var note       = document.getElementById("tm-accuracy-note");
+
+            if (btnGuEl) btnGuEl.disabled = true;
+            if (btnHiEl) btnHiEl.disabled = true;
+            if (resultBox) resultBox.classList.add("show");
+            if (resultLang) resultLang.textContent = targetLang === "gu" ? "ગુજરાતી" : "हिन्दी";
+            if (resultText) resultText.innerHTML = '<span class="tm-spinner"></span> Translating...';
+            if (note) note.textContent = "";
+
+            var langPair = targetLang === "gu" ? "en|gu" : "en|hi";
+            var url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=" + langPair;
+
+            try {
+                var res  = await fetch(url);
+                var data = await res.json();
+
+                if (data.responseStatus === 200) {
+                    var translated = data.responseData.translatedText;
+                    var match      = data.responseData.match;
+                    if (resultText) resultText.textContent = translated;
+
+                    if (match !== undefined) {
+                        var pct     = Math.round(match * 100);
+                        var verdict = pct >= 80
+                            ? "✅ Saru chhe"
+                            : pct >= 60
+                            ? "⚠️ Thodu check karo"
+                            : "❌ Manual check karvo padse";
+                        if (note) note.textContent = "Accuracy score: " + pct + "% — " + verdict;
+                    }
+                } else {
+                    if (resultText) resultText.innerHTML =
+                        '<span class="tm-error">Error: ' + (data.responseDetails || "Translation failed") + "</span>";
+                }
+            } catch (err) {
+                if (resultText) resultText.innerHTML =
+                    '<span class="tm-error">Network error. Internet check karo.</span>';
+            }
+
+            if (btnGuEl) btnGuEl.disabled = false;
+            if (btnHiEl) btnHiEl.disabled = false;
+        }
+
     });
     </script>
 
