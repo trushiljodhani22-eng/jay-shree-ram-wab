@@ -2304,7 +2304,14 @@ window.addEventListener("load", function () {
         recognition              = new SpeechRecognition();
         recognition.continuous   = false;
         recognition.interimResults = false;
-        recognition.lang         = "gu-IN"; // Gujarati primary; falls back gracefully
+        // Language set dynamically from selected UI language
+        function getMicLang() {
+            var lang = (typeof I18n !== "undefined") ? I18n.getLanguage() : "en";
+            if (lang === "gu") return "gu-IN";
+            if (lang === "hi") return "hi-IN";
+            return "en-US";
+        }
+        recognition.lang = getMicLang();
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
@@ -2330,6 +2337,8 @@ window.addEventListener("load", function () {
         };
 
         micBtn.addEventListener("click", () => {
+            // Update lang every click so language change takes effect
+            recognition.lang = getMicLang();
             if (!micActive) {
                 micActive = true;
                 setButtonActive(micBtn, true);
