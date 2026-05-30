@@ -1458,6 +1458,50 @@ userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
 });
 
+// ── Send Button ──────────────────────────────────────────────
+const sendBtn = document.getElementById("send-btn");
+if (sendBtn) {
+    sendBtn.addEventListener("click", () => sendMessage());
+}
+
+// ── Story Button: toggle mode AND auto-send if input has text ─
+(function patchStoryBtn() {
+    const storyBtn = document.getElementById("send-story-btn");
+    if (!storyBtn) return;
+    storyBtn.addEventListener("click", () => {
+        const input = document.getElementById("user-input");
+        if (input && input.value.trim()) {
+            // If user typed something, send it in story mode
+            window.voiceStoryMode = true;
+            sendMessage();
+        } else {
+            // No text — just show hint
+            if (input) {
+                input.placeholder = "Type your question and press Story again...";
+                setTimeout(() => { input.placeholder = "Type your question here..."; }, 3000);
+            }
+        }
+    });
+})();
+
+// ── Suggestion Button: toggle mode AND auto-send if input has text ─
+(function patchSuggestionBtn() {
+    const suggBtn = document.getElementById("send-suggestion-btn");
+    if (!suggBtn) return;
+    suggBtn.addEventListener("click", () => {
+        const input = document.getElementById("user-input");
+        if (input && input.value.trim()) {
+            window.voiceSuggestionMode = true;
+            sendMessage();
+        } else {
+            if (input) {
+                input.placeholder = "Type your question and press Suggestion again...";
+                setTimeout(() => { input.placeholder = "Type your question here..."; }, 3000);
+            }
+        }
+    });
+})();
+
 window.addEventListener("languagechange", retranslateDynamicMessages);
 
 // ============================================================

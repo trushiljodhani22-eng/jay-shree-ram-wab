@@ -1572,3 +1572,44 @@ body {
         max-width: 300px !important;
     }
 }
+
+/* =========================================
+   INPUT ROW WITH SEND BUTTON
+========================================= */
+.input-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100% !important;
+}
+
+.input-row #user-input {
+    flex: 1 !important;
+}
+
+.send-btn {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #f7b23b, #cc5500) !important;
+    color: white !important;
+    font-size: 1.1rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 15px rgba(204,85,0,0.3) !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    flex-shrink: 0 !important;
+}
+
+.send-btn:hover {
+    transform: scale(1.08) !important;
+    box-shadow: 0 6px 20px rgba(204,85,0,0.45) !important;
+}
+
+.send-btn:active {
+    transform: scale(0.95) !important;
+}
