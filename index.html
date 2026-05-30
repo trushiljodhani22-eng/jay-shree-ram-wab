@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- This line is required to make the website look perfect on mobile screens -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spiritual AI Guide</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -264,6 +265,8 @@
          LOGIN SCREEN
          [PRESERVED — untouched from File 1]
     ========================================= -->
+    <h1>Hello! This website will look great on your phone.</h1>
+
     <div id="login-screen" class="login-screen">
         <div class="login-wrapper">
             <div class="login-logo-box">
@@ -272,18 +275,83 @@
             <h1 class="login-title">JAY SHREE RAM</h1>
             <div class="login-buttons">
                 <button id="google-login-btn" class="login-btn google-btn">
-                    <span class="icon google-icon">G</span>
+                    <img src="goggle_logo.png" alt="Google" class="icon google-icon">
                     <span>Continue with Google</span>
-                </button>
-                <p class="or-text">OR</p>
-                <button id="facebook-login-btn" class="login-btn facebook-btn">
-                    <span class="icon facebook-icon">f</span>
-                    <span>Continue with Facebook</span>
                 </button>
             </div>
             <p id="login-error" class="login-error"></p>
         </div>
     </div>
+
+    <!-- =========================================
+         MOBILE TOP BAR (visible only on mobile via CSS)
+    ========================================= -->
+    <div class="mobile-top-bar" id="mobile-top-bar">
+        <button class="mobile-hamburger-btn" id="mobile-hamburger-btn" type="button" aria-label="Open menu">☰</button>
+        <span class="mobile-top-bar-title">JAY SHREE RAM</span>
+        <button class="mobile-newchat-btn" id="mobile-newchat-btn" type="button" aria-label="New Chat">＋</button>
+    </div>
+
+    <!-- =========================================
+         MOBILE DRAWER OVERLAY + DRAWER
+    ========================================= -->
+    <div class="mobile-drawer-overlay" id="mobile-drawer-overlay"></div>
+    <div class="mobile-drawer" id="mobile-drawer">
+        <div class="mobile-drawer-header">
+            <span class="mobile-drawer-title">Menu</span>
+            <button class="mobile-drawer-close" id="mobile-drawer-close" type="button">✕</button>
+        </div>
+
+        <!-- Drawer Buttons -->
+        <button class="mobile-drawer-btn" id="mob-new-chat-btn" type="button">
+            <span class="mobile-drawer-icon">＋</span> New Chat
+        </button>
+        <button class="mobile-drawer-btn" id="mob-buy-book-btn" type="button">
+            <span class="mobile-drawer-icon">📖</span> Buy Book
+        </button>
+        <button class="mobile-drawer-btn" id="mob-books-btn" type="button">
+            <span class="mobile-drawer-icon">📚</span> Books
+        </button>
+        <button class="mobile-drawer-btn" id="mob-translate-btn" type="button">
+            <span class="mobile-drawer-icon">🌐</span> Translate
+        </button>
+
+        <!-- Recent History -->
+        <div class="mobile-drawer-history">
+            <div class="mobile-drawer-history-heading">Recent</div>
+            <div id="mobile-history-list"></div>
+        </div>
+
+        <!-- User section at bottom of drawer -->
+        <div class="mobile-drawer-user">
+            <button class="mobile-drawer-user-btn" id="mob-user-menu-btn" type="button">
+                <div class="mobile-drawer-avatar" id="mob-user-avatar">U</div>
+                <span class="mobile-drawer-username" id="mob-user-name">User</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- =========================================
+         MOBILE BOTTOM NAVIGATION
+    ========================================= -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <button class="mobile-nav-btn" id="mobnav-chat" type="button">
+            <span class="mobile-nav-icon">💬</span>
+            <span class="mobile-nav-label">Chat</span>
+        </button>
+        <button class="mobile-nav-btn" id="mobnav-books" type="button">
+            <span class="mobile-nav-icon">📚</span>
+            <span class="mobile-nav-label">Books</span>
+        </button>
+        <button class="mobile-nav-btn" id="mobnav-translate" type="button">
+            <span class="mobile-nav-icon">🌐</span>
+            <span class="mobile-nav-label">Translate</span>
+        </button>
+        <button class="mobile-nav-btn" id="mobnav-profile" type="button">
+            <span class="mobile-nav-icon">👤</span>
+            <span class="mobile-nav-label">Profile</span>
+        </button>
+    </nav>
 
     <!-- =========================================
          SIDEBAR
@@ -715,6 +783,153 @@
         }
 
     });
+    </script>
+
+    <!-- =========================================
+         MOBILE LAYOUT JAVASCRIPT
+    ========================================= -->
+    <script>
+    (function () {
+
+        // ── Elements ──────────────────────────────────────────
+        var hamburgerBtn    = document.getElementById("mobile-hamburger-btn");
+        var drawerOverlay   = document.getElementById("mobile-drawer-overlay");
+        var drawer          = document.getElementById("mobile-drawer");
+        var drawerCloseBtn  = document.getElementById("mobile-drawer-close");
+        var mobileNewChat   = document.getElementById("mobile-newchat-btn");
+
+        // Bottom nav buttons
+        var navChat         = document.getElementById("mobnav-chat");
+        var navBooks        = document.getElementById("mobnav-books");
+        var navTranslate    = document.getElementById("mobnav-translate");
+        var navProfile      = document.getElementById("mobnav-profile");
+
+        // Drawer action buttons (mirror sidebar)
+        var mobNewChat      = document.getElementById("mob-new-chat-btn");
+        var mobBuyBook      = document.getElementById("mob-buy-book-btn");
+        var mobBooks        = document.getElementById("mob-books-btn");
+        var mobTranslate    = document.getElementById("mob-translate-btn");
+        var mobUserMenu     = document.getElementById("mob-user-menu-btn");
+
+        // ── Drawer open / close ───────────────────────────────
+        function openDrawer() {
+            if (drawer) drawer.classList.add("drawer-open");
+            if (drawerOverlay) drawerOverlay.classList.add("drawer-open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeDrawer() {
+            if (drawer) drawer.classList.remove("drawer-open");
+            if (drawerOverlay) drawerOverlay.classList.remove("drawer-open");
+            document.body.style.overflow = "";
+        }
+
+        if (hamburgerBtn)   hamburgerBtn.addEventListener("click", openDrawer);
+        if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
+        if (drawerOverlay)  drawerOverlay.addEventListener("click", closeDrawer);
+
+        // ── Mobile top-bar New Chat → mirrors main New Chat btn ──
+        function triggerNewChat() {
+            var mainBtn = document.getElementById("new-chat-btn");
+            if (mainBtn) mainBtn.click();
+            closeDrawer();
+        }
+
+        if (mobileNewChat) mobileNewChat.addEventListener("click", triggerNewChat);
+        if (mobNewChat)    mobNewChat.addEventListener("click", triggerNewChat);
+
+        // ── Drawer → Buy Book ─────────────────────────────────
+        if (mobBuyBook) mobBuyBook.addEventListener("click", function () {
+            var btn = document.getElementById("buy-book-btn");
+            if (btn) btn.click();
+            closeDrawer();
+        });
+
+        // ── Drawer → Books ────────────────────────────────────
+        if (mobBooks) mobBooks.addEventListener("click", function () {
+            var btn = document.getElementById("books-btn");
+            if (btn) btn.click();
+            closeDrawer();
+        });
+
+        // ── Drawer → Translate ────────────────────────────────
+        function openTranslate() {
+            var btn = document.getElementById("translate-btn");
+            if (btn) btn.click();
+            closeDrawer();
+        }
+        if (mobTranslate) mobTranslate.addEventListener("click", openTranslate);
+
+        // ── Drawer → User Menu (profile) ──────────────────────
+        if (mobUserMenu) mobUserMenu.addEventListener("click", function () {
+            closeDrawer();
+            var profileBtn = document.getElementById("profile-btn");
+            if (profileBtn) profileBtn.click();
+        });
+
+        // ── Bottom Nav ────────────────────────────────────────
+        if (navChat) navChat.addEventListener("click", function () {
+            // Scroll chat to bottom
+            var chatBox = document.getElementById("chat-box");
+            if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        if (navBooks) navBooks.addEventListener("click", function () {
+            var btn = document.getElementById("books-btn");
+            if (btn) btn.click();
+        });
+
+        if (navTranslate) navTranslate.addEventListener("click", openTranslate);
+
+        if (navProfile) navProfile.addEventListener("click", function () {
+            var profileBtn = document.getElementById("profile-btn");
+            if (profileBtn) profileBtn.click();
+        });
+
+        // ── Sync mobile drawer avatar with Firebase user ──────
+        window.addEventListener("spiritual-auth-success", function () {
+            var mobAvatar = document.getElementById("mob-user-avatar");
+            var mobName   = document.getElementById("mob-user-name");
+            var savedPhoto = localStorage.getItem("profilePhoto");
+
+            // Get info from existing sidebar elements
+            var sidebarInitial = document.getElementById("sidebar-user-initial");
+            var sidebarName    = document.getElementById("sidebar-user-name");
+
+            if (mobName && sidebarName) {
+                mobName.textContent = sidebarName.textContent || "User";
+            }
+
+            if (mobAvatar) {
+                if (savedPhoto) {
+                    mobAvatar.innerHTML = '<img src="' + savedPhoto + '" alt="User" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+                } else if (sidebarInitial) {
+                    mobAvatar.textContent = sidebarInitial.textContent || "U";
+                }
+            }
+        });
+
+        // ── Sync mobile history list from sidebar history ─────
+        function syncMobileHistory() {
+            var mobileList = document.getElementById("mobile-history-list");
+            var desktopList = document.getElementById("history-list");
+            if (mobileList && desktopList) {
+                mobileList.innerHTML = desktopList.innerHTML;
+                // Add close-drawer on history item click
+                mobileList.querySelectorAll(".history-item").forEach(function(item) {
+                    item.addEventListener("click", closeDrawer);
+                });
+            }
+        }
+
+        // Watch for history changes
+        var histObserver = new MutationObserver(syncMobileHistory);
+        var desktopList = document.getElementById("history-list");
+        if (desktopList) {
+            histObserver.observe(desktopList, { childList: true, subtree: true });
+        }
+
+    })();
     </script>
 
 </body>

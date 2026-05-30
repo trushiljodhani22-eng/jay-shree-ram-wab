@@ -1,5 +1,5 @@
 // ============================================================
-// FIREBASE AUTH — Google + Facebook Login
+// FIREBASE AUTH — Google Login
 // ============================================================
 
 const firebaseConfig = {
@@ -62,21 +62,13 @@ function getFriendlyAuthError(error, providerName) {
 
 // ── Helper: set loading state on buttons ────────────────────
 function setAuthButtonsState(isLoading, providerName) {
-    const googleBtn   = document.getElementById("google-login-btn");
-    const facebookBtn = document.getElementById("facebook-login-btn");
+    const googleBtn = document.getElementById("google-login-btn");
 
     if (googleBtn) {
         googleBtn.disabled = isLoading;
         googleBtn.innerHTML = isLoading && providerName === "Google"
             ? "Please wait..."
             : '<span class="social-icon google-icon">G</span> CONTINUE WITH GOOGLE';
-    }
-
-    if (facebookBtn) {
-        facebookBtn.disabled = isLoading;
-        facebookBtn.innerHTML = isLoading && providerName === "Facebook"
-            ? "Please wait..."
-            : '<span class="social-icon facebook-icon">F</span> CONTINUE WITH FACEBOOK';
     }
 }
 
@@ -93,22 +85,6 @@ async function handleGoogleLogin() {
         showLoginError(getFriendlyAuthError(error, "Google"));
     } finally {
         setAuthButtonsState(false, "Google");
-    }
-}
-
-// ── Facebook Login ───────────────────────────────────────────
-async function handleFacebookLogin() {
-    showLoginError("");
-    setAuthButtonsState(true, "Facebook");
-    try {
-        const provider = new firebase.auth.FacebookAuthProvider();
-        await auth.signInWithPopup(provider);
-        // Auth state listener handles UI update
-    } catch (error) {
-        console.error("Facebook login error:", error);
-        showLoginError(getFriendlyAuthError(error, "Facebook"));
-    } finally {
-        setAuthButtonsState(false, "Facebook");
     }
 }
 
@@ -228,12 +204,10 @@ auth.onAuthStateChanged((user) => {
 
 // ── Wire up buttons on DOM ready ─────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
-    const googleBtn   = document.getElementById("google-login-btn");
-    const facebookBtn = document.getElementById("facebook-login-btn");
-    const logoutBtn   = document.getElementById("logout-btn");
+    const googleBtn = document.getElementById("google-login-btn");
+    const logoutBtn = document.getElementById("logout-btn");
 
-    if (googleBtn)   googleBtn.addEventListener("click", handleGoogleLogin);
-    if (facebookBtn) facebookBtn.addEventListener("click", handleFacebookLogin);
+    if (googleBtn) googleBtn.addEventListener("click", handleGoogleLogin);
 
     if (logoutBtn) {
         logoutBtn.addEventListener("click", async () => {
