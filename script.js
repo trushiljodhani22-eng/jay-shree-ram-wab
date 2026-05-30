@@ -2342,14 +2342,28 @@ window.addEventListener("load", function () {
             if (!micActive) {
                 micActive = true;
                 setButtonActive(micBtn, true);
+                micBtn.textContent = (typeof I18n !== "undefined") ? I18n.t("micModeOn") : "🎤 Mode: On";
+                micBtn.style.background = "linear-gradient(135deg, #e74c3c, #c0392b)";
                 try { recognition.start(); } catch (e) {
                     micActive = false;
                     setButtonActive(micBtn, false);
+                    micBtn.textContent = (typeof I18n !== "undefined") ? I18n.t("micModeOff") : "🎤 Mode: Off";
+                    micBtn.style.background = "";
                 }
             } else {
                 micActive = false;
                 setButtonActive(micBtn, false);
+                micBtn.textContent = (typeof I18n !== "undefined") ? I18n.t("micModeOff") : "🎤 Mode: Off";
+                micBtn.style.background = "";
                 try { recognition.stop(); } catch (e) { /* ignore */ }
+            }
+        });
+
+        recognition.addEventListener("end", () => {
+            if (!micActive) {
+                micBtn.textContent = (typeof I18n !== "undefined") ? I18n.t("micModeOff") : "🎤 Mode: Off";
+                micBtn.style.background = "";
+                setButtonActive(micBtn, false);
             }
         });
     }
