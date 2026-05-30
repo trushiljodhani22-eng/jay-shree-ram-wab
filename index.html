@@ -265,7 +265,7 @@
          LOGIN SCREEN
          [PRESERVED — untouched from File 1]
     ========================================= -->
-    <h1>Hello! This website will look great on your phone.</h1>
+
 
     <div id="login-screen" class="login-screen">
         <div class="login-wrapper">
@@ -289,7 +289,9 @@
     <div class="mobile-top-bar" id="mobile-top-bar">
         <button class="mobile-hamburger-btn" id="mobile-hamburger-btn" type="button" aria-label="Open menu">☰</button>
         <span class="mobile-top-bar-title">JAY SHREE RAM</span>
-        <button class="mobile-newchat-btn" id="mobile-newchat-btn" type="button" aria-label="New Chat">＋</button>
+        <button class="mobile-avatar-btn" id="mobile-avatar-btn" type="button" aria-label="User Menu">
+            <div class="mobile-top-avatar" id="mobile-top-avatar">U</div>
+        </button>
     </div>
 
     <!-- =========================================
@@ -331,27 +333,7 @@
         </div>
     </div>
 
-    <!-- =========================================
-         MOBILE BOTTOM NAVIGATION
-    ========================================= -->
-    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
-        <button class="mobile-nav-btn" id="mobnav-chat" type="button">
-            <span class="mobile-nav-icon">💬</span>
-            <span class="mobile-nav-label">Chat</span>
-        </button>
-        <button class="mobile-nav-btn" id="mobnav-books" type="button">
-            <span class="mobile-nav-icon">📚</span>
-            <span class="mobile-nav-label">Books</span>
-        </button>
-        <button class="mobile-nav-btn" id="mobnav-translate" type="button">
-            <span class="mobile-nav-icon">🌐</span>
-            <span class="mobile-nav-label">Translate</span>
-        </button>
-        <button class="mobile-nav-btn" id="mobnav-profile" type="button">
-            <span class="mobile-nav-icon">👤</span>
-            <span class="mobile-nav-label">Profile</span>
-        </button>
-    </nav>
+    <!-- Mobile bottom nav removed -->
 
     <!-- =========================================
          SIDEBAR
@@ -791,20 +773,14 @@
     <script>
     (function () {
 
-        // ── Elements ──────────────────────────────────────────
         var hamburgerBtn    = document.getElementById("mobile-hamburger-btn");
         var drawerOverlay   = document.getElementById("mobile-drawer-overlay");
         var drawer          = document.getElementById("mobile-drawer");
         var drawerCloseBtn  = document.getElementById("mobile-drawer-close");
-        var mobileNewChat   = document.getElementById("mobile-newchat-btn");
+        var avatarBtn       = document.getElementById("mobile-avatar-btn");
+        var mobileTopAvatar = document.getElementById("mobile-top-avatar");
 
-        // Bottom nav buttons
-        var navChat         = document.getElementById("mobnav-chat");
-        var navBooks        = document.getElementById("mobnav-books");
-        var navTranslate    = document.getElementById("mobnav-translate");
-        var navProfile      = document.getElementById("mobnav-profile");
-
-        // Drawer action buttons (mirror sidebar)
+        // Drawer buttons
         var mobNewChat      = document.getElementById("mob-new-chat-btn");
         var mobBuyBook      = document.getElementById("mob-buy-book-btn");
         var mobBooks        = document.getElementById("mob-books-btn");
@@ -817,7 +793,6 @@
             if (drawerOverlay) drawerOverlay.classList.add("drawer-open");
             document.body.style.overflow = "hidden";
         }
-
         function closeDrawer() {
             if (drawer) drawer.classList.remove("drawer-open");
             if (drawerOverlay) drawerOverlay.classList.remove("drawer-open");
@@ -828,31 +803,25 @@
         if (drawerCloseBtn) drawerCloseBtn.addEventListener("click", closeDrawer);
         if (drawerOverlay)  drawerOverlay.addEventListener("click", closeDrawer);
 
-        // ── Mobile top-bar New Chat → mirrors main New Chat btn ──
+        // ── New Chat ──────────────────────────────────────────
         function triggerNewChat() {
             var mainBtn = document.getElementById("new-chat-btn");
             if (mainBtn) mainBtn.click();
             closeDrawer();
         }
+        if (mobNewChat) mobNewChat.addEventListener("click", triggerNewChat);
 
-        if (mobileNewChat) mobileNewChat.addEventListener("click", triggerNewChat);
-        if (mobNewChat)    mobNewChat.addEventListener("click", triggerNewChat);
-
-        // ── Drawer → Buy Book ─────────────────────────────────
+        // ── Drawer buttons ────────────────────────────────────
         if (mobBuyBook) mobBuyBook.addEventListener("click", function () {
             var btn = document.getElementById("buy-book-btn");
             if (btn) btn.click();
             closeDrawer();
         });
-
-        // ── Drawer → Books ────────────────────────────────────
         if (mobBooks) mobBooks.addEventListener("click", function () {
             var btn = document.getElementById("books-btn");
             if (btn) btn.click();
             closeDrawer();
         });
-
-        // ── Drawer → Translate ────────────────────────────────
         function openTranslate() {
             var btn = document.getElementById("translate-btn");
             if (btn) btn.click();
@@ -860,73 +829,58 @@
         }
         if (mobTranslate) mobTranslate.addEventListener("click", openTranslate);
 
-        // ── Drawer → User Menu (profile) ──────────────────────
+        // ── Drawer user → open main user menu panel ───────────
         if (mobUserMenu) mobUserMenu.addEventListener("click", function () {
             closeDrawer();
-            var profileBtn = document.getElementById("profile-btn");
-            if (profileBtn) profileBtn.click();
+            var userMenuBtn = document.getElementById("user-menu-btn");
+            if (userMenuBtn) userMenuBtn.click();
         });
 
-        // ── Bottom Nav ────────────────────────────────────────
-        if (navChat) navChat.addEventListener("click", function () {
-            // Scroll chat to bottom
-            var chatBox = document.getElementById("chat-box");
-            if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-        });
+        // ── Top-bar Avatar → open main user menu panel ────────
+        if (avatarBtn) {
+            avatarBtn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                var panel = document.getElementById("user-menu-panel");
+                if (panel) panel.classList.toggle("user-menu-open");
+            });
+        }
 
-        if (navBooks) navBooks.addEventListener("click", function () {
-            var btn = document.getElementById("books-btn");
-            if (btn) btn.click();
-        });
-
-        if (navTranslate) navTranslate.addEventListener("click", openTranslate);
-
-        if (navProfile) navProfile.addEventListener("click", function () {
-            var profileBtn = document.getElementById("profile-btn");
-            if (profileBtn) profileBtn.click();
-        });
-
-        // ── Sync mobile drawer avatar with Firebase user ──────
+        // ── Sync top avatar with Firebase user ────────────────
         window.addEventListener("spiritual-auth-success", function () {
-            var mobAvatar = document.getElementById("mob-user-avatar");
-            var mobName   = document.getElementById("mob-user-name");
             var savedPhoto = localStorage.getItem("profilePhoto");
-
-            // Get info from existing sidebar elements
             var sidebarInitial = document.getElementById("sidebar-user-initial");
             var sidebarName    = document.getElementById("sidebar-user-name");
 
-            if (mobName && sidebarName) {
-                mobName.textContent = sidebarName.textContent || "User";
-            }
+            // Mobile drawer avatar
+            var mobAvatar = document.getElementById("mob-user-avatar");
+            var mobName   = document.getElementById("mob-user-name");
+            if (mobName && sidebarName) mobName.textContent = sidebarName.textContent || "User";
 
-            if (mobAvatar) {
-                if (savedPhoto) {
-                    mobAvatar.innerHTML = '<img src="' + savedPhoto + '" alt="User" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
-                } else if (sidebarInitial) {
-                    mobAvatar.textContent = sidebarInitial.textContent || "U";
-                }
+            if (savedPhoto) {
+                var img = '<img src="' + savedPhoto + '" alt="User" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+                if (mobAvatar) mobAvatar.innerHTML = img;
+                if (mobileTopAvatar) mobileTopAvatar.innerHTML = img;
+            } else {
+                var initial = (sidebarInitial ? sidebarInitial.textContent : "") || "U";
+                if (mobAvatar) mobAvatar.textContent = initial;
+                if (mobileTopAvatar) mobileTopAvatar.textContent = initial;
             }
         });
 
-        // ── Sync mobile history list from sidebar history ─────
+        // ── Sync mobile history from desktop ─────────────────
         function syncMobileHistory() {
-            var mobileList = document.getElementById("mobile-history-list");
+            var mobileList  = document.getElementById("mobile-history-list");
             var desktopList = document.getElementById("history-list");
             if (mobileList && desktopList) {
                 mobileList.innerHTML = desktopList.innerHTML;
-                // Add close-drawer on history item click
                 mobileList.querySelectorAll(".history-item").forEach(function(item) {
                     item.addEventListener("click", closeDrawer);
                 });
             }
         }
-
-        // Watch for history changes
-        var histObserver = new MutationObserver(syncMobileHistory);
         var desktopList = document.getElementById("history-list");
         if (desktopList) {
-            histObserver.observe(desktopList, { childList: true, subtree: true });
+            new MutationObserver(syncMobileHistory).observe(desktopList, { childList: true, subtree: true });
         }
 
     })();

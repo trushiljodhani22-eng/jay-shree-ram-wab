@@ -1506,3 +1506,69 @@ body {
     .mobile-bottom-nav { display: flex !important; }
     /* drawer shown via JS class */
 }
+
+/* =========================================
+   MOBILE AVATAR BUTTON (top-right)
+   & Remove bottom nav spacing
+========================================= */
+@media (max-width: 600px) {
+
+    /* Remove bottom nav — no longer used */
+    .mobile-bottom-nav { display: none !important; }
+
+    /* Input area back to bottom: 0 (no bottom nav anymore) */
+    .input-area {
+        bottom: 0 !important;
+    }
+
+    /* Chat box padding adjust (no bottom nav) */
+    .chat-box {
+        padding-bottom: 180px !important;
+    }
+
+    /* ── Avatar button in top bar ── */
+    .mobile-avatar-btn {
+        width: 40px !important;
+        height: 40px !important;
+        border: none !important;
+        background: transparent !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+    .mobile-top-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        background: #f7b23b !important;
+        color: #5b3200 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 1rem !important;
+        font-weight: 900 !important;
+        border: 2px solid rgba(255,179,59,0.7) !important;
+        overflow: hidden !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    }
+
+    .mobile-top-avatar img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border-radius: 50% !important;
+    }
+
+    /* ── User menu panel on mobile (opens from avatar) ── */
+    #user-menu-panel {
+        left: auto !important;
+        right: 10px !important;
+        bottom: auto !important;
+        top: 60px !important;
+        width: calc(100vw - 20px) !important;
+        max-width: 300px !important;
+    }
+}
