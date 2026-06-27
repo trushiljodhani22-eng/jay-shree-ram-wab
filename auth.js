@@ -1,5 +1,5 @@
 // ============================================================
-// FIREBASE AUTH — Google Login
+// FIREBASE AUTH — Google Login with Persistent Session
 // ============================================================
 
 const firebaseConfig = {
@@ -16,8 +16,16 @@ if (!firebase.apps.length) {
 
 const auth = firebase.auth();
 
-// Persistent login across sessions
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+// ── Persistent login across sessions (saved in browser local storage) ──
+// This ensures user stays logged in even after closing browser or restarting device
+(async function initAuthPersistence() {
+    try {
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        console.log("Firebase Auth persistence set to LOCAL - session will persist");
+    } catch (error) {
+        console.error("Failed to set auth persistence:", error);
+    }
+})();
 
 // ── Helper: clear cached user profile ───────────────────────
 function clearSafeUserProfile() {
@@ -175,12 +183,17 @@ function initProfilePhotoUpload() {
 }
 
 // ── Single Auth State Listener ───────────────────────────────
+// This listener automatically detects restored sessions from persistence
 auth.onAuthStateChanged((user) => {
     const loginScreen = document.getElementById("login-screen");
     const mainContent = document.getElementById("main-content");
     const userProfile = document.getElementById("user-profile");
+    const mobileTopAvatar = document.getElementById("mobile-top-avatar");
 
     if (user) {
+        // User is signed in (either fresh login or restored from persistence)
+        console.log("User authenticated:", user.email);
+
         // Show main website
         if (loginScreen) loginScreen.style.display = "none";
         if (mainContent)  mainContent.classList.remove("auth-hidden");
@@ -189,10 +202,24 @@ auth.onAuthStateChanged((user) => {
         // Update all UI elements with user data
         updateAllUserUI(user);
 
+        // Update mobile avatar
+        if (mobileTopAvatar) {
+            const savedPhoto = localStorage.getItem("profilePhoto");
+            if (savedPhoto) {
+                mobileTopAvatar.innerHTML = `<img src="${savedPhoto}" alt="User" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+            } else {
+                const initial = (user.displayName || user.email || "U").charAt(0).toUpperCase();
+                mobileTopAvatar.textContent = initial;
+            }
+        }
+
         // Signal to script.js that auth succeeded (starts flute music, etc.)
         window.dispatchEvent(new CustomEvent("spiritual-auth-success"));
 
     } else {
+        // User is signed out - only show login screen
+        console.log("No user session found - showing login screen");
+
         // Show login screen, hide content
         if (loginScreen) loginScreen.style.display = "flex";
         if (mainContent)  mainContent.classList.add("auth-hidden");
