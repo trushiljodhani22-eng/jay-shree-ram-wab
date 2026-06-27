@@ -284,8 +284,14 @@ header {
 .chat-search-box {
     position: relative;
     width: 100%;
-    margin-bottom: 10px;
+    padding: 0 10px;
+    margin-bottom: 6px;
     display: none;
+}
+
+/* Wrapper for sidebar search - positioned between Translate and divider */
+.sidebar-search-wrapper {
+    margin-top: 4px;
 }
 
 .sidebar:hover .chat-search-box,

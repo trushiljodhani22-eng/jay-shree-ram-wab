@@ -376,17 +376,18 @@
             <span class="sidebar-label">Translate</span>
         </button>
 
+        <!-- Search Bar - Between Translate and Recent -->
+        <div class="chat-search-box sidebar-search-wrapper">
+            <input type="text" id="sidebar-search-input" class="chat-search-input" placeholder="Search chats..." autocomplete="off">
+            <span class="chat-search-icon">🔍</span>
+        </div>
+
         <!-- Divider -->
         <hr class="sidebar-divider">
 
         <!-- Recent Chat History -->
         <div id="sidebar-history" class="sidebar-history">
             <div class="history-heading">Recent</div>
-            <!-- Search Bar -->
-            <div class="chat-search-box">
-                <input type="text" id="sidebar-search-input" class="chat-search-input" placeholder="Search chats..." autocomplete="off">
-                <span class="chat-search-icon">🔍</span>
-            </div>
             <div id="history-list" class="history-list"></div>
         </div>
 
