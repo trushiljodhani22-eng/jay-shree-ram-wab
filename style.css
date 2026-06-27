@@ -294,9 +294,12 @@ header {
     margin-top: 4px;
 }
 
+/* Show search box when sidebar is hovered or open */
+.sidebar:hover .sidebar-search-wrapper,
+.sidebar.sidebar-open .sidebar-search-wrapper,
 .sidebar:hover .chat-search-box,
 .sidebar.sidebar-open .chat-search-box {
-    display: block;
+    display: block !important;
 }
 
 .chat-search-input {
