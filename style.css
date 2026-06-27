@@ -280,6 +280,62 @@ header {
     padding-left: 4px;
 }
 
+/* ================= CHAT SEARCH BAR ================= */
+.chat-search-box {
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+    display: none;
+}
+
+.sidebar:hover .chat-search-box,
+.sidebar.sidebar-open .chat-search-box {
+    display: block;
+}
+
+.chat-search-input {
+    width: 100%;
+    padding: 8px 12px 8px 32px;
+    border: 1px solid rgba(139, 94, 60, 0.25);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 13px;
+    font-weight: 500;
+    color: #5b3200;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.chat-search-input::placeholder {
+    color: rgba(91, 50, 0, 0.5);
+}
+
+.chat-search-input:focus {
+    border-color: rgba(247, 178, 59, 0.6);
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(247, 178, 59, 0.15);
+}
+
+.chat-search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* No results message */
+.chat-search-no-results {
+    padding: 12px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8b5e3c;
+    text-align: center;
+    opacity: 0.8;
+}
+
 .history-item {
     position: relative !important;
     display: flex !important;
@@ -1434,6 +1490,21 @@ body {
         letter-spacing: 0.5px !important;
         margin-bottom: 8px !important;
         padding-left: 4px !important;
+    }
+
+    /* Mobile search bar in drawer */
+    .mobile-search-box {
+        display: block !important;
+        margin-bottom: 10px !important;
+    }
+
+    .mobile-search-box .chat-search-input {
+        padding: 10px 12px 10px 34px !important;
+        font-size: 14px !important;
+    }
+
+    .mobile-search-box .chat-search-icon {
+        font-size: 14px !important;
     }
 
     .mobile-drawer-user {

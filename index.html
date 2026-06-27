@@ -321,6 +321,11 @@
         <!-- Recent History -->
         <div class="mobile-drawer-history">
             <div class="mobile-drawer-history-heading">Recent</div>
+            <!-- Search Bar for Mobile -->
+            <div class="chat-search-box mobile-search-box">
+                <input type="text" id="mobile-search-input" class="chat-search-input" placeholder="Search chats..." autocomplete="off">
+                <span class="chat-search-icon">🔍</span>
+            </div>
             <div id="mobile-history-list"></div>
         </div>
 
@@ -377,6 +382,11 @@
         <!-- Recent Chat History -->
         <div id="sidebar-history" class="sidebar-history">
             <div class="history-heading">Recent</div>
+            <!-- Search Bar -->
+            <div class="chat-search-box">
+                <input type="text" id="sidebar-search-input" class="chat-search-input" placeholder="Search chats..." autocomplete="off">
+                <span class="chat-search-icon">🔍</span>
+            </div>
             <div id="history-list" class="history-list"></div>
         </div>
 
@@ -877,13 +887,35 @@
             if (mobileList && desktopList) {
                 mobileList.innerHTML = desktopList.innerHTML;
                 mobileList.querySelectorAll(".history-item").forEach(function(item) {
-                    item.addEventListener("click", closeDrawer);
+                    item.addEventListener("click", function() {
+                        // Clear mobile search when loading a chat
+                        var mobileSearch = document.getElementById("mobile-search-input");
+                        if (mobileSearch) mobileSearch.value = "";
+                        closeDrawer();
+                    });
                 });
+                // Also sync "no results" message if present
+                var noResults = desktopList.querySelector(".chat-search-no-results");
+                if (noResults && !mobileList.querySelector(".chat-search-no-results")) {
+                    // Already synced via innerHTML
+                }
             }
         }
         var desktopList = document.getElementById("history-list");
         if (desktopList) {
             new MutationObserver(syncMobileHistory).observe(desktopList, { childList: true, subtree: true });
+        }
+
+        // ── Mobile search input sync to desktop ─────────────
+        var mobileSearchInput = document.getElementById("mobile-search-input");
+        var sidebarSearchInput = document.getElementById("sidebar-search-input");
+        if (mobileSearchInput) {
+            mobileSearchInput.addEventListener("input", function(e) {
+                // Sync to sidebar search (desktop)
+                if (sidebarSearchInput && sidebarSearchInput !== document.activeElement) {
+                    sidebarSearchInput.value = e.target.value;
+                }
+            });
         }
 
     })();

@@ -1010,19 +1010,45 @@ function closeAllHistoryMenusGlobal() {
     });
 }
 
-function renderChatHistory() {
+function renderChatHistory(searchQuery = "") {
     try {
         const historyList = document.getElementById("history-list");
         if (!historyList) return;
-        
-        const chats = getStoredChats();
+
+        let chats = getStoredChats();
         if (!Array.isArray(chats)) {
             console.error("Invalid chats data in renderChatHistory");
             return;
         }
-        
+
+        // Filter chats based on search query
+        if (searchQuery && searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+            chats = chats.filter(chat => {
+                if (!chat || !chat.title) return false;
+                // Search in title
+                if (chat.title.toLowerCase().includes(query)) return true;
+                // Search in message content
+                if (chat.messages && Array.isArray(chat.messages)) {
+                    return chat.messages.some(msg =>
+                        msg && msg.text && msg.text.toLowerCase().includes(query)
+                    );
+                }
+                return false;
+            });
+        }
+
         historyList.innerHTML = "";
-        
+
+        // Show "no results" message if no chats match
+        if (searchQuery && searchQuery.trim() && chats.length === 0) {
+            const noResults = document.createElement("div");
+            noResults.className = "chat-search-no-results";
+            noResults.textContent = "No chats found";
+            historyList.appendChild(noResults);
+            return;
+        }
+
         chats.forEach(chat => {
             if (!chat || !chat.id) return;
             
@@ -1593,6 +1619,107 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeChatHistory();
 
     // =========================
+    // CHAT SEARCH FUNCTIONALITY
+    // =========================
+
+    const sidebarSearchInput = document.getElementById("sidebar-search-input");
+    const mobileSearchInput = document.getElementById("mobile-search-input");
+
+    // Debounce function for search
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Search handler
+    function handleSearch(query, source = "desktop") {
+        // Filter the chat history
+        renderChatHistory(query);
+
+        // Sync mobile history if search originated from desktop sidebar
+        if (source === "desktop") {
+            syncMobileSearch(query);
+        } else if (source === "mobile") {
+            syncDesktopSearch(query);
+        }
+    }
+
+    // Sync functions to keep both search inputs in sync
+    function syncMobileSearch(query) {
+        if (mobileSearchInput && mobileSearchInput.value !== query) {
+            mobileSearchInput.value = query;
+        }
+        // Update mobile history list
+        const mobileHistoryList = document.getElementById("mobile-history-list");
+        const desktopHistoryList = document.getElementById("history-list");
+        if (mobileHistoryList && desktopHistoryList) {
+            mobileHistoryList.innerHTML = desktopHistoryList.innerHTML;
+            attachMobileHistoryClickHandlers();
+        }
+    }
+
+    function syncDesktopSearch(query) {
+        if (sidebarSearchInput && sidebarSearchInput.value !== query) {
+            sidebarSearchInput.value = query;
+        }
+        // Desktop history is already updated via renderChatHistory
+    }
+
+    // Attach click handlers to mobile history items
+    function attachMobileHistoryClickHandlers() {
+        const mobileHistoryList = document.getElementById("mobile-history-list");
+        if (mobileHistoryList) {
+            mobileHistoryList.querySelectorAll(".history-item").forEach(item => {
+                item.addEventListener("click", () => {
+                    // Close mobile drawer
+                    const drawer = document.getElementById("mobile-drawer");
+                    const drawerOverlay = document.getElementById("mobile-drawer-overlay");
+                    if (drawer) drawer.classList.remove("drawer-open");
+                    if (drawerOverlay) drawerOverlay.classList.remove("drawer-open");
+                    document.body.style.overflow = "";
+                });
+            });
+        }
+    }
+
+    // Debounced search handlers
+    const debouncedSidebarSearch = debounce((e) => {
+        handleSearch(e.target.value, "desktop");
+    }, 150);
+
+    const debouncedMobileSearch = debounce((e) => {
+        handleSearch(e.target.value, "mobile");
+    }, 150);
+
+    // Attach event listeners to search inputs
+    if (sidebarSearchInput) {
+        sidebarSearchInput.addEventListener("input", debouncedSidebarSearch);
+        // Prevent search input from triggering sidebar collapse
+        sidebarSearchInput.addEventListener("click", (e) => e.stopPropagation());
+        sidebarSearchInput.addEventListener("focus", (e) => e.stopPropagation());
+    }
+
+    if (mobileSearchInput) {
+        mobileSearchInput.addEventListener("input", debouncedMobileSearch);
+        // Prevent search input from closing drawer
+        mobileSearchInput.addEventListener("click", (e) => e.stopPropagation());
+    }
+
+    // Clear search when new chat is created
+    function clearSearchInputs() {
+        if (sidebarSearchInput) sidebarSearchInput.value = "";
+        if (mobileSearchInput) mobileSearchInput.value = "";
+        renderChatHistory("");
+    }
+
+    // =========================
     // ELEMENTS
     // =========================
 
@@ -1767,6 +1894,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (newChatBtn && chatBox) {
 
         newChatBtn.addEventListener("click", () => {
+
+            // Clear search inputs when creating new chat
+            clearSearchInputs();
 
             // Use proper createNewChat() to generate unique ID and register in history
             const newChat = createNewChat();
